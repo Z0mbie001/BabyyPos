@@ -1,11 +1,3 @@
-{
-	"name": "com.unity.2d.sprite",
-	"displayName":"2D Sprite",
-	"version": "1.0.0",
-    "unity": "2019.2",
-    "keywords": ["2d", "sprite", "sprite editor window"],
-    "category": "2D",
-	"description": "Use Unity Sprite Editor Window to create and edit Sprite asset properties like pivot, borders and Physics shape",
-    "dependencies": {
-    }
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:49eecb96e7de058e4b3f324dd273bfa588b87efc38cd71770e0057da69733282
+size 347

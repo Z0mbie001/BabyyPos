@@ -1,9 +1,3 @@
-# Changelog
-
-## [1.0.0] - 2020-09-22
-###Added
-- Added confirmation dialog when user pressed on Apply/Revert button on the Sprite Editor Window. This can be enabled/disabled in Preferences
-
-## [1.0.0] - 2019-01-25
-###Added
-- This is the first release of Sprite Editor, as a Package
+version https://git-lfs.github.com/spec/v1
+oid sha256:3808457dddc4e63de4461ec8a345983461298b2d8d73b15b0fa82a356fe68f4c
+size 281

@@ -1,5 +1,3 @@
-com.unity.2d.tilemap copyright © 2019 Unity Technologies
-
-Licensed under the Unity Package Distribution License (see https://unity3d.com/legal/licenses/Unity_Package_Distribution_License ).
-
-Unless expressly provided otherwise, the software under this license is made available strictly on an “AS IS” BASIS WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED. Please review the license for details on these and other terms and conditions.
+version https://git-lfs.github.com/spec/v1
+oid sha256:38a63216fb04c8cf0cbfafca2b92a2da2a5d0e56b3c88a99651ab7ec663aad88
+size 441

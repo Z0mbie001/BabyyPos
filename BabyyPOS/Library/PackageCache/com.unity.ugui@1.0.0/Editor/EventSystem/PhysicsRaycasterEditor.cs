@@ -1,20 +1,3 @@
-using UnityEngine.EventSystems;
-
-namespace UnityEditor.EventSystems
-{
-    [CustomEditor(typeof(PhysicsRaycaster), true)]
-    /// <summary>
-    /// Custom Editor for the EventSystem Component.
-    /// Extend this class to write a custom editor for a component derived from EventSystem.
-    /// </summary>
-    public class PhysicsRaycasterEditor : Editor
-    {
-        public override void OnInspectorGUI()
-        {
-            base.OnInspectorGUI();
-#if !PACKAGE_PHYSICS
-            EditorGUILayout.HelpBox("Physics module is not present. This Raycaster will have no effect", MessageType.Warning);
-#endif
-        }
-    }
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:de86fed75bcef5884a96b4fb96553c182f2c3bcae90ffca0b47de32307fb6267
+size 623

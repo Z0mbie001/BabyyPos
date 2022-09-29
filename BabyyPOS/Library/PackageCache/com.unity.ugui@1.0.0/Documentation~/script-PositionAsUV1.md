@@ -1,11 +1,3 @@
-# Position as UV1
-
-This adds a simple Position as UV1 effect to text and image graphics.
-
-## Properties
-
-![](images/UI_PositionAsUV1Inspector.png)
-
-|**Property:** |**Function:** |
-|:---|:---|
-|**Script** |  |
+version https://git-lfs.github.com/spec/v1
+oid sha256:1d803dd2fc440f9edcb059dbb5d5a4ad203afc65a2e711e233e02f3759a49455
+size 209

@@ -1,27 +1,3 @@
-using UnityEngine;
-using Object = UnityEngine.Object;
-
-namespace UnityEditor.Tilemaps
-{
-    internal struct TileDragAndDropHoverData
-    {
-        public Object hoverObject;
-        public Vector3 positionOffset;
-        public Vector3 scaleFactor;
-        public bool hasOffset;
-
-        public TileDragAndDropHoverData(Object hoverObject) : this(hoverObject, Vector3.zero, Vector3.one, false)
-        {
-        }
-
-        public TileDragAndDropHoverData(Object hoverObject, Vector3 positionOffset, Vector3 scaleFactor, bool hasOffset = true)
-        {
-            this.hoverObject = hoverObject;
-            this.positionOffset = positionOffset;
-            if (scaleFactor.z <= 0.0f)
-                scaleFactor.z = 1.0f;
-            this.scaleFactor = scaleFactor;
-            this.hasOffset = hasOffset;
-        }
-    }
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:cb57c36fb7f4ba03490efd55153728aaff3eef1e106b960e68036eba2a5779b4
+size 827

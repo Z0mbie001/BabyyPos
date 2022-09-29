@@ -1,12 +1,3 @@
-<UXML xmlns:ui= "UnityEngine.Experimental.UIElements"  xmlns:uie= "UnityEditor.Experimental.UIElements">
-  <ui:VisualElement name = "polygonShapeWindow" class = "moduleWindow topLeft">
-    <ui:Box name = "polygonShapeWindowFrame">
-      <uie:IntegerField name = "labelIntegerField" class = "labelIntegerField" label = "Sides" value = "0"/>
-      <ui:VisualElement name = "warning" >
-        <ui:Image name = "icon"/>
-        <ui:Label name = "warningLabel" text= "Sides can only be either 0 or anything between 3 and 128"/>
-      </ui:VisualElement>
-      <ui:Button name = "changeButton" text= "Change" />
-    </ui:Box>
-  </ui:VisualElement>
-</UXML>
+version https://git-lfs.github.com/spec/v1
+oid sha256:fb6edabea6198f1578be425a1be433e4febc34d4d3f0561b3bef4d21ef3327c4
+size 651

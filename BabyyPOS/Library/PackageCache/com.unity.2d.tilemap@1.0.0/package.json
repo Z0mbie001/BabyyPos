@@ -1,11 +1,3 @@
-{
-    "name": "com.unity.2d.tilemap",
-    "displayName": "2D Tilemap Editor",
-    "version": "1.0.0",
-    "unity": "2019.2",
-    "description": "2D Tilemap Editor is a package that contains editor functionalities for editing Tilemaps.",
-    "keywords": ["2d", "Tilemap"],
-    "category": "2D",
-    "dependencies": {
-    }
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:2e02faa7b9907cf4c9dc893415f764d904c28abdac5038ca285b140d4614c57a
+size 324

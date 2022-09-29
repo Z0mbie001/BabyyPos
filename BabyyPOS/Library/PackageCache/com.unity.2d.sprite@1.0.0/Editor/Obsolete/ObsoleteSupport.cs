@@ -1,16 +1,3 @@
-using System;
-using System.Linq;
-using UnityEditor.Sprites;
-using UnityEngine;
-
-namespace UnityEditor.U2D.Sprites.Obsolete
-{
-    public static class ObsoleteSupport
-    {
-        [Obsolete("Sprite Packer is no longer supported. Consider switching to the new Sprite Altas System")]
-        public static void ShowSpritePacker()
-        {
-            EditorWindow.GetWindow<PackerWindow>();
-        }
-    }
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:dfb20636d3a7b01dd27db736be0bb22198348d589d44830764968dc25bc499cc
+size 407

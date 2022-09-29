@@ -1,11 +1,3 @@
-{
-    "name": "com.unity.modules.unitywebrequesttexture",
-    "version": "1.0.0",
-    "type": "module",
-    "displayName": "Unity Web Request Texture",
-    "description": "The UnityWebRequestTexture module provides the DownloadHandlerTexture class to use UnityWebRequest to download Textures. Scripting API: https://docs.unity3d.com/ScriptReference/UnityEngine.UnityWebRequestTextureModule.html",
-    "dependencies": {
-        "com.unity.modules.unitywebrequest": "1.0.0",
-        "com.unity.modules.imageconversion": "1.0.0"
-    }
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:d00ab9487161381c1a3a701968eaea2ff32b328b6ab83f9d4fa95a97c24eb9a6
+size 534

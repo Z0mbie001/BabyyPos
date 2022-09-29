@@ -1,13 +1,3 @@
-using NUnit.Framework;
-
-namespace UnityEditor.U2D.Sprites.EditorTests
-{
-    internal class SpritePackageEditorTests
-    {
-        [Test]
-        public void SpriteEditorWindow_IsLoadedFromDll()
-        {
-            Assert.That(typeof(SpriteEditorWindow).Assembly.FullName, Contains.Substring("Unity.2D.Sprite.Editor"));
-        }
-    }
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:ca83aad7719107b2edce80acb5561ccb0f133ada8fe458113208bfe175142c1f
+size 339

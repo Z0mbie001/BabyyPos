@@ -1,7 +1,3 @@
-# Unity UI: Unity User Interface
-
-Unity UI is a UI toolkit for developing user interfaces for games and applications. It is a GameObject-based UI system that uses Components and the Game View to arrange, position, and style user interfaces.
-​
-You cannot use Unity UI to create or change user interfaces in the Unity Editor.
-
-This documentation describes Unity UI features such as creating a Canvas, positioning and animating elements, defining user interactions, and sizing layouts automatically.
+version https://git-lfs.github.com/spec/v1
+oid sha256:53b1bbf5e7124bb5701fcf8803f34a688c87d6c4647e317b13633d12d74cd782
+size 499

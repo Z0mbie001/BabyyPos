@@ -1,27 +1,3 @@
-using System;
-using System.Collections.Generic;
-
-namespace UnityEditor.Tilemaps
-{
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-    public class BrushToolsAttribute : Attribute
-    {
-        private List<Type> m_ToolTypes;
-        internal List<Type> toolList
-        {
-            get { return m_ToolTypes; }
-        }
-
-        public BrushToolsAttribute(params Type[] tools)
-        {
-            m_ToolTypes = new List<Type>();
-            foreach (var toolType in tools)
-            {
-                if (toolType.IsSubclassOf(typeof(TilemapEditorTool)) && !m_ToolTypes.Contains(toolType))
-                {
-                    m_ToolTypes.Add(toolType);
-                }
-            }
-        }
-    }
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:0345a52060d2744d552cabf8b4b985983e89bc85ca698b010a7ee0dbf0e665dc
+size 731

@@ -1,11 +1,3 @@
-{
-    "name": "com.unity.modules.animation",
-    "version": "1.0.0",
-    "type": "module",
-    "displayName": "Animation",
-    "description": "The Animation module implements Unity's animation system. Scripting API: https://docs.unity3d.com/ScriptReference/UnityEngine.AnimationModule.html",
-    "icon": ".icon.png",
-    "dependencies": {
-
-    }
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:9f33e30941fa60097b78db1ac3abc011292a7a0fc5efe3e31823601cc1e6f0ee
+size 348

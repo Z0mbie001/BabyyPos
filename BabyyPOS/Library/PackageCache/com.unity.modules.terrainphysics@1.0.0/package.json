@@ -1,11 +1,3 @@
-{
-    "name": "com.unity.modules.terrainphysics",
-    "version": "1.0.0",
-    "type": "module",
-    "displayName": "Terrain Physics",
-    "description": "The TerrainPhysics module connects the Terrain and Physics modules by implementing the TerrainCollider component. Scripting API: https://docs.unity3d.com/ScriptReference/UnityEngine.TerrainPhysicsModule.html",
-    "dependencies": {
-        "com.unity.modules.physics": "1.0.0",
-        "com.unity.modules.terrain": "1.0.0"
-    }
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:06af596a6feb02f46ba9b8e12dd62d7c7f855d2939983f930987c5d2edc2f943
+size 485

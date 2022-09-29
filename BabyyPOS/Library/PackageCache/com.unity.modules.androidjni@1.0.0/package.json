@@ -1,10 +1,3 @@
-{
-    "name": "com.unity.modules.androidjni",
-    "version": "1.0.0",
-    "type": "module",
-    "displayName": "Android JNI",
-    "description": "AndroidJNI module allows you to call Java code. Scripting API: https://docs.unity3d.com/ScriptReference/UnityEngine.AndroidJNIModule.html",
-    "dependencies": {
-
-    }
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:3d70b03675d30d20768b588579d04237e621f5b371b5c426c118c2bcfba69f7a
+size 317

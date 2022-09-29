@@ -1,32 +1,3 @@
-using UnityEngine.UI;
-
-namespace UnityEditor.UI
-{
-    [CustomEditor(typeof(Mask), true)]
-    [CanEditMultipleObjects]
-    /// <summary>
-    /// Custom Editor for the Mask component.
-    /// Extend this class to write a custom editor for a component derived from Mask.
-    /// </summary>
-    public class MaskEditor : Editor
-    {
-        SerializedProperty m_ShowMaskGraphic;
-
-        protected virtual void OnEnable()
-        {
-            m_ShowMaskGraphic = serializedObject.FindProperty("m_ShowMaskGraphic");
-        }
-
-        public override void OnInspectorGUI()
-        {
-            var graphic = (target as Mask).GetComponent<Graphic>();
-
-            if (graphic && !graphic.IsActive())
-                EditorGUILayout.HelpBox("Masking disabled due to Graphic component being disabled.", MessageType.Warning);
-
-            serializedObject.Update();
-            EditorGUILayout.PropertyField(m_ShowMaskGraphic);
-            serializedObject.ApplyModifiedProperties();
-        }
-    }
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:135399e4817cecde7e8984d11723f4d5f36b0080baebd8f7e81d3c72118b4381
+size 996

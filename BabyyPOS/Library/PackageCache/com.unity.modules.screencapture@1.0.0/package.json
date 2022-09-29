@@ -1,11 +1,3 @@
-{
-    "name": "com.unity.modules.screencapture",
-    "version": "1.0.0",
-    "type": "module",
-    "displayName": "Screen Capture",
-    "description": "The ScreenCapture module provides functionality to take screen shots using the ScreenCapture class. Scripting API: https://docs.unity3d.com/ScriptReference/UnityEngine.ScreenCaptureModule.html",
-    "icon": ".icon.png",
-    "dependencies": {
-        "com.unity.modules.imageconversion": "1.0.0"
-    }
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:4cbafc0b7322f9c6554f7766e2208c5232e1760259418e5fd14562563eb87f56
+size 455

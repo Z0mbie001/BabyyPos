@@ -1,24 +1,3 @@
-using UnityEngine;
-using UnityEngine.UI;
-
-namespace UnityEditor.UI
-{
-    [InitializeOnLoad]
-    internal class PrefabLayoutRebuilder
-    {
-        static PrefabLayoutRebuilder()
-        {
-            PrefabUtility.prefabInstanceUpdated += OnPrefabInstanceUpdates;
-        }
-
-        static void OnPrefabInstanceUpdates(GameObject instance)
-        {
-            if (instance)
-            {
-                RectTransform rect = instance.transform as RectTransform;
-                if (rect)
-                    LayoutRebuilder.MarkLayoutForRebuild(rect);
-            }
-        }
-    }
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:7296d7c7420360e453ea84e5a5e410d03c984cf6496093e86b17749e60783356
+size 586

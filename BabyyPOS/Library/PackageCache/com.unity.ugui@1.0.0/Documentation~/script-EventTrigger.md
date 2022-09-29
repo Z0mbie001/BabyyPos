@@ -1,12 +1,3 @@
-# Event Trigger
-
-The Event Trigger receives events from the Event System and calls registered functions for each event.
-
-The Event Trigger can be used to specify functions you wish to be called for each Event System event. You can assign multiple functions to a single event and whenever the Event Trigger receives that event it will call those functions.
-
-Note that attaching an Event Trigger component to a GameObject will make that object intercept all events, and no event bubbling will occur from this object!
-
-
-## Events
-
-Each of the [Supported Events](SupportedEvents.md) can optionally be included in the Event Trigger by clicking the Add New Event Type button.
+version https://git-lfs.github.com/spec/v1
+oid sha256:3827624e2c7fa295abbe7a2d0d55ba8ee822221e707daba5461c57dd9b29469b
+size 670

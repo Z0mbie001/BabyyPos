@@ -1,36 +1,3 @@
-using UnityEngine;
-using UnityEngine.UI;
-
-namespace UnityEditor.UI
-{
-    [CustomPropertyDrawer(typeof(SpriteState), true)]
-    /// <summary>
-    /// This is a PropertyDrawer for SpriteState. It is implemented using the standard Unity PropertyDrawer framework.
-    /// </summary>
-    public class SpriteStateDrawer : PropertyDrawer
-    {
-        public override void OnGUI(Rect rect, SerializedProperty prop, GUIContent label)
-        {
-            Rect drawRect = rect;
-            drawRect.height = EditorGUIUtility.singleLineHeight;
-            SerializedProperty highlightedSprite = prop.FindPropertyRelative("m_HighlightedSprite");
-            SerializedProperty pressedSprite = prop.FindPropertyRelative("m_PressedSprite");
-            SerializedProperty selectedSprite = prop.FindPropertyRelative("m_SelectedSprite");
-            SerializedProperty disabledSprite = prop.FindPropertyRelative("m_DisabledSprite");
-
-            EditorGUI.PropertyField(drawRect, highlightedSprite);
-            drawRect.y += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
-            EditorGUI.PropertyField(drawRect, pressedSprite);
-            drawRect.y += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
-            EditorGUI.PropertyField(drawRect, selectedSprite);
-            drawRect.y += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
-            EditorGUI.PropertyField(drawRect, disabledSprite);
-            drawRect.y += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
-        }
-
-        public override float GetPropertyHeight(SerializedProperty prop, GUIContent label)
-        {
-            return 4 * EditorGUIUtility.singleLineHeight + 3 * EditorGUIUtility.standardVerticalSpacing;
-        }
-    }
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:7efe18f89f363b35322d03280f870bb69ede7630ab447dc36269eb3fd465758d
+size 1825

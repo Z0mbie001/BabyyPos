@@ -1,26 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-
-namespace UnityEditor.U2D.Sprites
-{
-    internal class DefaultSpriteNameFileIdDataProvider : ISpriteNameFileIdDataProvider
-    {
-        SpriteNameFileIdPair[] m_NameIDPair;
-
-        public DefaultSpriteNameFileIdDataProvider(IEnumerable<SpriteRect> spriteRects)
-        {
-            m_NameIDPair = spriteRects.Select(x => new SpriteNameFileIdPair(x.name, x.spriteID)).ToArray();
-        }
-
-        public IEnumerable<SpriteNameFileIdPair> GetNameFileIdPairs()
-        {
-            return m_NameIDPair;
-        }
-
-        public void SetNameFileIdPairs(IEnumerable<SpriteNameFileIdPair> nameFileIdPairs)
-        {
-            m_NameIDPair = nameFileIdPairs.ToArray();
-        }
-    }
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:5d03555dcf46eea70bb66d3ce44fdeb2e63a3f58717f19dad910ddf2bc571701
+size 761

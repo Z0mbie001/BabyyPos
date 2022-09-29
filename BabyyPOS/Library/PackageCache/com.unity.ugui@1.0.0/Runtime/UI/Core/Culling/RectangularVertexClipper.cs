@@ -1,21 +1,3 @@
-namespace UnityEngine.UI
-{
-    internal class RectangularVertexClipper
-    {
-        readonly Vector3[] m_WorldCorners = new Vector3[4];
-        readonly Vector3[] m_CanvasCorners = new Vector3[4];
-
-        public Rect GetCanvasRect(RectTransform t, Canvas c)
-        {
-            if (c == null)
-                return new Rect();
-
-            t.GetWorldCorners(m_WorldCorners);
-            var canvasTransform = c.GetComponent<Transform>();
-            for (int i = 0; i < 4; ++i)
-                m_CanvasCorners[i] = canvasTransform.InverseTransformPoint(m_WorldCorners[i]);
-
-            return new Rect(m_CanvasCorners[0].x, m_CanvasCorners[0].y, m_CanvasCorners[2].x - m_CanvasCorners[0].x, m_CanvasCorners[2].y - m_CanvasCorners[0].y);
-        }
-    }
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:3074adcfc9760d98966684ed0c9f24ab3a3bd5ad3f506a0ef54b58908607976e
+size 760

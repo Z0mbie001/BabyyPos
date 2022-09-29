@@ -1,9 +1,3 @@
-# Auto Layout
-
-The [auto layout](UIAutoLayout.md) system provides ways to place elements in nested layout groups such as horizontal groups, vertical groups, or grids. It also allows elements to automatically be sized according to the contained content.
-
-* [Content Size Fitter](script-ContentSizeFitter.md)
-* [Layout Element](script-LayoutElement.md)
-* [Horizontal Layout Group](script-HorizontalLayoutGroup.md)
-* [Vertical Layout Group](script-VerticalLayoutGroup.md)
-* [Grid Layout Group](script-GridLayoutGroup.md)
+version https://git-lfs.github.com/spec/v1
+oid sha256:727a23e183b10546fed7b29a65916302ec9d0386b9494f99711fb9abf21726fe
+size 518
