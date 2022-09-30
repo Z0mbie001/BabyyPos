@@ -1,3 +1,10 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:4c2b5c7d2c45a5a3ee0c3f39073bf41dc0792608900597d2ce599a5a4d592f07
-size 1120
+﻿{ "pid": 35942, "tid": -1, "ph": "M", "name": "process_name", "args": { "name": "netcorerun.dll" } },
+{ "pid": 35942, "tid": -1, "ph": "M", "name": "process_sort_index", "args": { "sort_index": "-1" } },
+{ "pid": 35942, "tid": 1, "ph": "M", "name": "thread_name", "args": { "name": "" } },
+{ "pid": 35942, "tid": 1, "ts": 1664528821013859, "dur": 2395805, "ph": "X", "name": "BuildProgram", "args": {} },
+{ "pid": 35942, "tid": 1, "ts": 1664528821019593, "dur": 468888, "ph": "X", "name": "BuildProgramContextConstructor", "args": {} },
+{ "pid": 35942, "tid": 1, "ts": 1664528822900778, "dur": 9364, "ph": "X", "name": "OutputData.Write", "args": {} },
+{ "pid": 35942, "tid": 1, "ts": 1664528822910147, "dur": 499441, "ph": "X", "name": "Backend.Write", "args": {} },
+{ "pid": 35942, "tid": 1, "ts": 1664528822912231, "dur": 297882, "ph": "X", "name": "JsonToString", "args": {} },
+{ "pid": 35942, "tid": 1, "ts": 1664528823488519, "dur": 2360, "ph": "X", "name": "", "args": {} },
+{ "pid": 35942, "tid": 1, "ts": 1664528823484358, "dur": 6577, "ph": "X", "name": "Write chrome-trace events", "args": {} },
