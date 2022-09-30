@@ -1,3 +1,19 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:2f8d0d3c00e77b9f09c9cd55474a750d8a5132a463d2fec329d0f328a04a0662
-size 306
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Item
+{
+    int id = 0;
+    string name = "Item";
+    float price = 0.5f;
+    int type = 0;
+
+    public Item(int id, string name, float price, int type)
+    {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+        this.type = type;
+    }
+}
