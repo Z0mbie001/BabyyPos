@@ -9,6 +9,7 @@ public class Item
     float price = 0.5f;
     int type = 0;
 
+    //initalising function
     public Item(int id, string name, float price, int type)
     {
         this.id = id;
