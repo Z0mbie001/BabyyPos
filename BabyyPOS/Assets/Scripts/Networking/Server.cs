@@ -16,9 +16,12 @@ public class Server : MonoBehaviour
     private List<ServerClient> clients;
     private List<ServerClient> disconectList;
 
+    public Server instance;
+
     //Run before first frame, starts the server
     private void Start()
     {
+        instance = this;
         clients = new List<ServerClient>();
         disconectList = new List<ServerClient>();
 
@@ -90,7 +93,7 @@ public class Server : MonoBehaviour
         }else if (data.Contains("&STOCKLUDBR"))
         {
             string[] splitData = data.Split('|');
-            FindObjectOfType<ServerController>().instance.StockLookupRequest(splitData[1], splitData[2]);
+            FindObjectOfType<ServerController>().instance.StockLookupRequest(c, System.Convert.ToInt32(splitData[1]), splitData[2]);
             Debug.Log("Stock Lookup request from " + c.clientName + " has been received with the parameters : " + splitData[1] + " and " + splitData[2]);
         }
         else
@@ -134,18 +137,16 @@ public class Server : MonoBehaviour
     private void AcceptTcpClient(IAsyncResult ar)
     {
         TcpListener listener = (TcpListener)ar.AsyncState;
-
         clients.Add(new ServerClient(listener.EndAcceptTcpClient(ar)));
         StartListening();
 
-        //send a message to everyone, saying someone has connected
-        //Broadcast(clients[clients.Count - 1].clientName + " has connected", clients);
+        //request a name from the client that just connected
         Send("%NAME", clients[clients.Count - 1]);
         Debug.Log("Requesting Client Name");
     }
 
     //used to send data to the clients
-    private void Send(string data, ServerClient c)
+    public void Send(string data, ServerClient c)
     {
         try
         {
@@ -153,7 +154,7 @@ public class Server : MonoBehaviour
             writer.WriteLine(data);
             writer.Flush();
         }
-        catch (Exception e)
+        catch (Exception e) //if there is an error
         {
             Debug.Log("Write error : " + e.Message + "to client " + c.clientName);
         }

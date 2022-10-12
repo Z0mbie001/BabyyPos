@@ -37,6 +37,7 @@ public class DatabaseManager : MonoBehaviour
         IDbConnection dbConnection = new SqliteConnection(connection);
         dbConnection.Open();
         //returns the new database connection
+        Debug.Log("Successfully connected to the database");
         return dbConnection;
     }
 

@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class Item
 {
-    int id = 0;
-    string name = "Item";
-    float price = 0.5f;
-    int type = 0;
+    public int id = 0;
+    public string name = "Item";
+    public float price = 0.5f;
+    public int type = 0;
 
     //initalising function
     public Item(int id, string name, float price, int type)

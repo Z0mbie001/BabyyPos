@@ -8,6 +8,7 @@ using System;
 
 public class Client : MonoBehaviour
 {
+    public Client instance;
     public string clientName = "Unknown";
     
     private bool socketReady;
@@ -15,6 +16,12 @@ public class Client : MonoBehaviour
     private NetworkStream stream;
     private StreamWriter writer;
     private StreamReader reader;
+
+    //A proceudre that runs in the first frame
+    private void Start()
+    {
+        instance = this;
+    }
 
     //Allows the client to connect to the server
     public void ConnectToServer()
@@ -57,7 +64,7 @@ public class Client : MonoBehaviour
             socketReady = true;
 
         }
-        catch (Exception e)
+        catch (Exception e) //if there is an error
         {
             Debug.Log("Socket error : " + e.Message);
         }
@@ -66,10 +73,13 @@ public class Client : MonoBehaviour
     //runs every frame
     private void Update()
     {
+        //checks that if connected to a server
         if (socketReady)
         {
+            //checks it can recieve data
             if (stream.DataAvailable)
             {
+                //checks for any incoming data
                 string data = reader.ReadLine();
                 if (data != null)
                 {
@@ -86,6 +96,17 @@ public class Client : MonoBehaviour
         {
             Send("&NAME |" + clientName);
             return;
+        }else if (data.Contains("%STOCKLURT"))
+        {
+            string[] splitData = data.Split('|');
+            if(splitData[1] == "~END")
+            {
+                FindObjectOfType<StockLookup>().instance.allItemsReturned = true;
+            }
+            else
+            {
+                FindObjectOfType<StockLookup>().instance.returnedItems.Add(new Item(System.Convert.ToInt32(splitData[1]), splitData[2], (float)System.Convert.ToDouble(splitData[3]), System.Convert.ToInt32(splitData[4])));
+            }
         }
         Debug.Log("Sever: " + data);
         //GameObject go = Instantiate(messagePrefab, chatContainer.transform) as GameObject;

@@ -375,6 +375,7 @@
 "Assets/Scripts/Databases/ServerController.cs"
 "Assets/Scripts/Networking/Client.cs"
 "Assets/Scripts/Networking/Server.cs"
+"Assets/Scripts/Till Functions/StockLookup.cs"
 -langversion:9.0
 
 /deterministic
