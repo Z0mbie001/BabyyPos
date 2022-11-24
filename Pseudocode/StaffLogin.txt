@@ -1,0 +1,18 @@
+CLASS StaffLogin
+	staffMembers = []
+	dataRecieved = false
+	
+	PROCEDURE LookUp(id)
+		Client.Send("&STAFFLOGDBR|" + id + "| ")
+		WAIT UNITL dataRecieved == true THEN
+			IF LENGHT(staffMembers) != 1 THEN
+				RETURN NONE
+			ELSE THEN
+				IF staffMembers[0].validDate > DATETIME.CurrentDate THEN
+					POSController.staffMember = staffMembers[0]
+				ELSE THEN
+					RETURN NONE
+				END IF
+			END IF
+	END PROCEDURE
+END CLASS

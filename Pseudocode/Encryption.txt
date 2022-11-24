@@ -1,0 +1,48 @@
+CLASS Encryption
+	currentDate = DateTime.minValue
+	key = ""
+	alphabet = ('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '!', '"', '£', '$', '%', '^', '&', '*', '(', ')', '_', '-', '+', '=', '¬', '`', '|', ',', '<', '.', '>', '/', '?', ';', ':', '[', ']', '{', '}', '@', '#', '~')
+
+	PROCEDURE Update()
+		IF currentDate != DateTime.Now THEN
+			currentDate = DateTime.Now
+			SetKey()
+		END IF
+	END PROCEDURE
+
+	PROCEDURE SetKey()
+		key = STRING(currentDate.Date) + STRING(currentDate.DayOfYear)
+		key = Encrypt(key);
+	END PROCEDURE
+
+	PROCEDURE FindPosInArray(charToFind, array)
+		FOR i = 0 TO array.Length()
+			IF charToFind == array[i] THEN
+				RETURN i
+			END IF
+		NEXT i
+		RETURN -1
+	END PROCEDURE
+
+	PROCEDURE Encrypt(plainText)
+		cypherText = ""
+		FOR i = 0 TO plainText.Length()
+			keyCharNo = FindPosInArray(key[i % key.Length()], alphabet)
+			plainTextCharNo = FindPosInArray(plainText[i], alphabet)]
+			cypherNumber = keyCharNo + plainTextCharNo
+			cypherText += alphabet[cypherNumber % alphabet.Length]
+		NEXT i
+		RETURN cypherText
+	END PROCEDURE
+
+	PROCEDURE Decrypt(cypherText)
+		plainText = ""
+		FOR i = 0 TO cypherText.Length()
+			keyCharNo = FindPosInArray(key[i % key.Length()], alphabet)
+			cypherTextCharNo = FindPosInArray(cypherText[i], alphabet)]
+			plainNumber = keyCharNo + cypherTextCharNo
+			plainText += alphabet[plainNumber % alphabet.Length]
+		NEXT i
+		RETURN plainText
+	END PROCEDURE
+END CLASS

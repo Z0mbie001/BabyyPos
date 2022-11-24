@@ -1,0 +1,22 @@
+CLASS Item
+	id = 0
+	name = ""
+	price = 0.1
+	type = 0
+END CLASS
+
+CLASS TransItem
+	itemId = 0
+	quantity = 0
+	cost = 0.1
+END CLASS
+
+CLASS StaffMember
+	id = 0
+	firstName = ""
+	lastName = ""
+	dob = new DATETIME
+	validDate = new DATETIME
+	startDate = new DATETIME
+	persmLv = 0
+END CLASS

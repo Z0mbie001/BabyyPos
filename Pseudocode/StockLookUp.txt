@@ -1,0 +1,33 @@
+CLASS StockLookUp
+	items = []
+	dataRecieved = false
+	buttonPrefab = stockLuButton.PREFAB
+	
+	PROCEDURE LookUp(name, id)
+		Client.Send("&STOCKLUDBR|" + id + "|" + name)
+		WAIT UNTIL dataRecieved == true THEN
+			FOR i IN RANGE 0 TO LENGTH(items)
+				AddStockButton(items[i].name, items[i].id, items[i].price, items[i].type)
+			NEXT i
+	END PROCEDURE
+
+	PROCEDURE AddStockButton(buttonText, buttonId, buttonCost, buttonType)
+		newButton = Instantiate(buttonPrefab)
+		newButton.text = buttonText
+		newButton.id = buttonId
+		newButton.itemName = buttonText
+		newButton.cost = buttonCost
+		newButton.type = buttonType
+	END PROCEDURE
+	
+	PROCEDURE OnButtonPress()
+		idToSearch = INT(INPUT("Id to search")
+		nameToSearch = STRING(INPUT("Name to search")
+		Lookup(nameToSearch, idToSearch)
+	END PROCEDURE
+	
+	PROCEDURE ClearStockPage()
+		items = []
+		DESTROY ALL buttonPrefab
+	END PROCEDURE
+END CLASS

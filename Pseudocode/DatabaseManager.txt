@@ -1,0 +1,180 @@
+IMPORT SQLite
+
+CLASS DatabaseManager
+	IDbConnection dbcon;
+	
+	PROCEDURE Start()
+		dbcon = OpenConnectionToDB()
+		CreateStockTable()
+		CreateStaffTable()
+		CreateTransTable()
+	END PROCEDURE
+	
+	FUNCTION OpenConnectionToDB()
+		connection = "URI=file:" + Application.persistentDataPath + "/BPos_Database.db"
+		stockDBConnection = new SqliteConnection(connection)
+		stockDBConnection.Open()
+		RETURN stockDBConnection
+	END FUNCTION
+
+	PROCEDURE CreateStockTable()
+		dbcmd = dbcon.CreateCommand()
+		q_createTable = "CREATE TABLE IF NOT EXISTS stock_table (id INTEGER PRIMARY KEY, name VARCHAR(255), cost FLOAT, type INTEGER);"
+		dbcmd.CommandText = q_createTable
+		dbcmd.ExecuteReader()
+	END PROCEDURE
+	
+	PROCEDURE InsertValuesIntoStockTable(itemToAdd)
+		cmnd = dbcon.CreateCommand()
+		cmnd.CommandText = "INSERT OR REPLACE INTO stock_table (id, name, cost, type) VALUES(" + itemToAdd.id + ", '" + itemToAdd.itemName + "', " + itemToAdd.cost + ", " + itemName.type + ");"
+		cmnd.ExecuteNonQuery()
+	END PROCEDURE
+	
+	FUNCTION ReadValuesInStockTable(id, itemName)
+		itemsReturned = []
+		cmnd_read = dbcon.CreateCommand()
+		query = "SELECT * FROM stock_table WHERE id LIKE '%" + id + "%' AND name LIKE '%" + itemName + "%';"
+		reader = cmnd_read.ExecuteReader()
+		WHILE reader.Read()
+			newItem = new item
+			newItem.id = System.Convert.ToInt32(reader[0])
+			newItem.name = System.Convert.ToString(reader[1])
+			newItem.cost = FLOAT(System.Convert.ToDouble(reader[2]))
+			newItem.type = System.Convert.ToInt32(reader[3])
+			itemsReturned += newItem
+		NEXT WHILE
+		RETURN itemsReturned
+	END FUNCTION
+	
+	PROCEDURE CreateStaffTable()
+		dbcmd = dbcon.CreateCommand()
+		q_createTable = "CREATE TABLE IF NOT EXISTS staff_table (staffId INTEGER PRIMARY KEY, firstName VARCHAR(255), lastName VARCHAR(255), dateOfBirth DATE, validUntill DATE, startDate DATE, premissionsLv INTEGER);"
+		dbcmd.CommandText = q_createTable
+		dbcmd.ExecuteReader()
+	END PROCEDURE
+	
+	PROCEDURE InsertValuesIntoStaffTable(staffMemberToAdd)
+		formattedValidDate = "'" + staffMemberToAdd.validUntill.Year + "-" + staffMemberToAdd.validUntill.Month + "-" + staffMemberToAdd.validUntill.Day + "'"
+		formattedStartDate = "'" + staffMemberToAdd.startDate.Year + "-" + staffMemberToAdd.startDate.Month + "-" + staffMemberToAdd.startDate.Day + "'"
+		formattedDOB = "'" + staffMemberToAdd.dob.Year + "-" + staffMemberToAdd.dob.Month + "-" + staffMemberToAdd.dob.Day + "'"
+		cmnd = dbcon.CreateCommand()
+		cmnd.CommandText = "INSERT OR REPLACE INTO staff_table VALUES (" + staffMemberToAdd.id + ", '" + staffMemberToAdd.firstName + "', '" + staffMemberToAdd.lastName + "', " + formattedDOB + ", " + formattedValidDate + ", " + formattedStartDate + ", " + staffMemberToAdd.permsLv + ");"
+		cmnd.ExecuteNonQuery()
+	END PROCEDURE
+	
+	FUNCTION ReadValuesInStaffTable(id, lastName)
+		staffRetuned = []
+		cmnd_read = dbcon.CreateCommand()
+		query = "SELECT * FROM staff_table WHERE staffId LIKE " + id + " AND lastName LIKE '%" + lastName + "%';"
+		cmnd_read.CommandText = query
+		reader = cmnd_read.ExecuteReader()
+		WHILE reader.Read()
+			newStaff = new StaffMember
+			newStaff.id = INTEGER(reader[0])
+			newStaff.firstName = STRING(reader[1])
+			newStaff.lastName = STRING(reader[2])
+			newStafff.dob = DATETIME(reader[3])
+			newStaff.validDate = DATETIME(reader[4])
+			newStaff.startDate = DATETIME(reader[5])
+			newStaff.permsLv = INTEGER(reader[6])
+			staffRetuned += newStaff
+		NEXT WHILE
+		RETURN staffRetuned
+	END FUNCTION
+	
+	PROCEDURE CreateTransTable()
+		dbcmd = dbcon.CreateCommand()
+		q_createTable = "CREATE TABLE IF NOT EXISTS trans_table (transId INTEGER, date DATE, itemId INTEGER, quantity INTEGER, cost FLOAT, paymentType INTEGER, transCost FLOAT, serviceMemeberId INTEGER, PRIMARY KEY (id, itemId));"
+		dbcmd.CommandText = q_createTable
+		dbcmd.ExecuteReader()
+	END PROCEDURE
+	
+	PROCEDURE InsertValuesIntoTransTable(transactionToAdd)
+		formattedDate = "'" + transactionToAdd.date.Year + "-" + transactionToAdd.date.Month + "-" + transactionToAdd.date.Day + "'"
+		cmnd = dbcon.CreateCommand()
+		FOR i IN RANGE 0 TO transactionToAdd.itemsInTrans
+			cmnd.CommandText = INSERT OR REPLACE INTO trans_table VALUES (" + transactionToAdd.id + ", " + formattedDate + ", " + transactionToAdd.itemsInTrans[i].id + ", " + transactionToAdd.itemAmounts[i] + ", " + transactionToAdd.itemsInTrans[i].cost + ", " + transactionToAdd.paymentType + ", " + transactionToAdd.totalCost + ", " + transactionToAdd.serviceMemeberId + ");"
+			cmnd.ExecuteNonQuery()
+		NEXT i
+	END PROCEDURE
+	
+	FUNCTION ReadValuesInTransTable(transId, transDate, transTotalCost)
+		rtTrans = new transaction
+		formattedDate = "'" + transDate.Year + "-" + transDate.Month + "-" + transDate.Day + "'"
+		cmnd_read.dbcon.CreateCommand()
+		query = "SELECT * FROM trans_table WHERE transId LIKE " + transId + " AND date LIKE " + formattedDate + " AND transCost LIKE " + transTotalCost + ";"
+		cmnd_read.CommandText = query
+		reader = cmnd_read.ExecuteReader()
+		WHILE reader.Read()
+			rtTrans.id = INTEGER(reader[0])
+			rtTrans.date = DATETIME(reader[1])
+			rtTrans.itemsInTrans.ADD(new transItem)
+			itemNo = LENGTH(rtTrans.itemsInTrans) - 1
+			rtTrans.itemsInTrans[itemNo].itemId = INTEGER(reader[2])
+			rtTrans.itemsInTrans[itemNo].quantity = INTEGER(reader[3])
+			rtTrans.itemsInTrans[itemNo].cost = FLOAT(reader[4])
+			rtTrans.paymentType = INTEGER(reader[5])
+			rtTrans.transCost = FLOAT(reader[6])
+			rtTrans.serviceMemeberId = INTEGER(reader[7])
+		NEXT WHILE
+		RETURN rtTrans
+	END FUNCTION
+	
+	PROCEDURE StockLuDBR(client, idToFind, nameToFind)
+		endMessage = "%STOCKLURT|~END"
+		items = ReadValuesInStockTable(idToFind, nameToFind)
+		FOR i IN RANGE 0 TO LENGTH(items)
+			messageToSend = "%STOCKLURT|" +  items[i].id + "|" + items[i].name + "|" + items[i].cost + "|" + items[i].type
+			Server.Broadcast(messageToSend, client)
+		NEXT i
+		Server.Broadcast(endMessage, client)
+	END PROCEDURE
+	
+	PROCEDURE StockAdd(id, name, cost, type)
+		itemToAdd = NEW Item
+		itemToAdd.id = id
+		itemToAdd.name = name
+		itemToAdd.cost = cost
+		itemToAdd.type = type
+		InsertValuesIntoStockTable(itemToAdd)
+	END PROCEDURE
+	
+	PROCEDURE StaffLogDBR(client, idToFind, lastNameToFind)
+		endMessage = "%STAFFLOGDBR|~END"
+		staffMembers = ReadValuesInStaffTable(idToFind, lastNameToFind)
+		FOR i IN RANGE 0 TO LENGTH(staffMembers)
+			messageToSend = "%STAFFLOGRT|" + staffMembers[i].id + "|" + staffMembers[i].firstName + "|" + staffMembers[i].lastName + "|" + staffMembers[i].validDate + "|" + staffMembers[i].startDate + "|" + staffMembers[i].permsLv
+			Server.Broadcast(messageToSend, client)
+		NEXT i
+		Server.Broadcast(endMessage, client)
+	END PROCEDURE
+	
+	PROCEDURE TransAdd(id, date, itemId, itemAmount, cost, type, totalCost, serviceMember)
+		newTrans.id = id
+		newTrans.date = DATETIME(date)
+		newTrans.itemsInTrans.Append(new TransItem)
+		newTrans.itemsInTrans[0].itemId  = itemId
+		newTrans.itemsInTrans[0].quantity = itemAmount
+		newTrans.itemsInTrans[0].cost = cost
+		newTrans.paymentType = type
+		newTrans.transCost = totalCost
+		newTrans.serviceMemeberId = serviceMember
+		InsertValuesIntoTransTable(newTrans)
+	END PROCEDURE
+	
+	PROCEDURE TransDBR(client, id, date, totalCost)
+		endMessage = "%TRANSRT|~END"
+		transRq = ReadValuesInTransTable(id, date, totalCost)
+		FOR i IN RANGE 0 TO LENGTH(transRq) - 1 
+			formattedDate = "'" + transRq.date.Year + "-" + transRq.date.Month + "-" + transRq.date.Day + "'"
+			FOR j IN RANGE 0 TO LENGTH(transRq[i].itemsInTrans) - 1
+				messageToSend = "%TRANSRT|" + transRq[i].id + "|" + formattedDate + "|" + transRq[i].itemsInTrans[j].itemId + "|" + transRq[i].itemsInTrans[j].quantity + "|" + transRq[i].itemsInTrans[j].cost + "|" + transRq[i].paymentType + "|" + transRq[i].transCost + "|" + transRq[i].serviceMemeberId
+				Server.Broadcast(messageToSend, client)
+			NEXT j
+		NEXT i
+	END PROCEDURE
+	
+	PROCEDURE CloseConnectionToDB()
+		dbcon.Close()
+	END PROCEDURE
+END CLASS	

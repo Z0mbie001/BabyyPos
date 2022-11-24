@@ -1,0 +1,29 @@
+IMPORT JsonUtility
+CLASS ClientDataSave
+	saveLocation = ""
+	currentData = NEW ClientData
+	
+	PROCEDURE LoadData()
+		startData = JsonUtility.FromJson<ClientData>(File.ReadAllText(saveLocation ))
+		currentData.host = startData.host
+		currentData.port = startData.port
+		currentData.numberOfTransactions = startData.numberOfTransactions
+		currentData.clientName = startData.clientName
+	END PROCEDURE
+	
+	PROCEDURE SaveData()
+		currentData.clientName = POSController.tillName
+		currentData.host = Client.host
+		currentData.port = Client.port
+		currentData.numberOfTransactions = TransactionController.transactionNumber
+		jsonData = JsonUtility.ToJson(currentData, true)
+		File.WriteAllText(saveLocation, jsonData)
+	END PROCEDURE
+END CLASS
+
+CLASS ClientData
+	clientName = ""
+	host = ""
+	port = 0
+	numberOfTransactions = 0
+END CLASS

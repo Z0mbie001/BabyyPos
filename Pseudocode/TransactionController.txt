@@ -1,0 +1,55 @@
+CLASS TransactionController
+	amountToPay = 0
+	partPayedCash = false
+	transactionNumber = 0
+	
+	PROCEDURE payment(typeOfPayment)
+		IF typeOfPayment == 0 AND partPayedCash == false THEN
+			OUTPUT("CARD PAYMENT REQUESTED")
+			CompleteTransaction(0)
+		ELSE IF typeOfPayment == 0 AND partPayedCash == true THEN
+			OUTPUT("PART-CARD PAYMENT REQUESTED")
+			CompleteTransaction(2)
+		ELSE IF typeOfPayment == 1 THEN
+			OUTPUT("CASH PAYMENT REQUESTED")
+			CashPayment()
+		ELSE THEN
+			OUTPUT("UNKNOWN ERROR")
+		END IF
+	END PROCEDURE
+	
+	PROCEDURE CashPayment()
+		cashAmount = INTEGER(INPUT("Enter Amount Of Cash")
+		amountToPay -= cashAmount
+		IF amountToPay > 0 THEN
+			partPayedCash = true
+			RequestPayment()
+		ELSE IF amountToPay <= 0 THEN
+			CompleteTransaction(1)
+		END IF
+	END PROCEDURE
+	
+	PROCEDURE RequestPayment()
+		paymentType = INTEGER(INPUT("Please enter a type of payment")
+		payment(paymentType)
+	END PROCEDURE
+	
+	PROCEDURE CompleteTransaction(transactionType)
+		transList = []
+		transId = ""
+		FOR i IN RANGE 0 TO LENGTH(POSController.tillName)
+			transId += STRING(POSController.tillName[i].GetNumericValue())
+		NEXT i
+		transId += transactionNumber
+		FOR i IN RANGE 0 TO LENGTH(POSController.itemsInOrder)
+			newTransItem = NEW TransItem
+			newTransItem.itemId = POSController.itemsInOrder[i].index.id
+			newTransItem.quantity = POSController.itemsInOrder[i].value
+			newTransItem.cost = POSController.itemsInOrder[i].index.price
+			transList += newTransItem
+			formattedDate = "'" + DATETIME.current.Year + "-" + DATETIME.current.Month + "-" + DATETIME.current.Day + "'"
+			messageToSend = "&TRANSADD|" + transId + "|" + formattedDate + "|" + newTransItem.itemId + "|" + newTransItem.quantity + "|" + newTransItem.cost + "|" + transactionType + "|" + POSController.subTotal + "|" + POSController.staffMember.id
+			Client.Send(messageToSend)
+		NEXT i
+	END PROCEDURE
+END CLASS

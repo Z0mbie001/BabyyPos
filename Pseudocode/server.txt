@@ -1,0 +1,101 @@
+CLASS Server
+	port = 1803
+	server = new TcpListener
+	serverStarted = false
+
+	clients = []
+	disconnectList = []
+
+	PROCEDURE Start()
+		clients = NEW List OF ServerClient
+		disconnectList = NEW List OF ServerClient
+		
+		server = NEW TcpListener
+		server.Start()
+		
+		StartListening()
+		serverStarted = true
+	END PROCEDURE
+
+	PROCEDURE Update()
+		IF serverStarted == false THEN
+			RETURN None
+		END IF
+		
+		FOR c in clients
+			IF c.IsConnected() == false THEN
+				c.Connection.close()
+				disconnectList.APPEND(c)
+			ELSE
+				NewtorkStream s = c.Connection.GetData()
+				IF s != None THEN
+					string data = s.ReadLine()
+					OnIncomingData(c, data)
+			END IF
+		NEXT c 
+		
+		FOR i = 0 TO disconnectList.Length()
+			clients.REMOVE(disconnectList[i])
+			disconnectList.POP(i)
+		next i
+	END PROCEDURE
+		
+	PROCEDURE OnIncomingData(c, rawData)
+		data = Encryption.Decrypt(rawData)
+		IF data.CONTAINS("&NAME") THEN 
+			c.clientName = data.SPLIT('|')[1]
+		ELSE IF data.CONTAINS("&STOCKLUDBR") THEN
+			DatabaseManager.StockLuDBR(c, data.SPLIT('|')[1], data.SPLIT('|')[2])
+		ELSE IF data.CONTAINS("&STOCKADD") THEN
+			DatabaseManager.StockAdd(data.SPLIT('|')[1], data.SPLIT('|')[2], data.SPLIT('|')[3], data.SPLIT('|')[4])
+		ELSE IF data.CONTAINS("&STAFFLOGDBR") THEN
+			DatabaseManager.StaffLogDBR(c, data.SPLIT('|')[1], data.SPLIT('|')[2])
+		ELSE IF data.CONTAINS("&TRANSADD") THEN
+			DatabaseManager.TransAdd(data.SPLIT('|')[1], data.SPLIT('|')[2], data.SPLIT('|')[3], data.SPLIT('|')[4], data.SPLIT('|')[5], data.SPLIT('|')[6], data.SPLIT('|')[7], data.SPLIT('|')[8])
+		ELSE IF data.CONTAINS("&TRANSDBR") THEN
+			DatabaseManager.transDBR(c, data.SPLIT('|')[1], data.SPLIT('|')[2], data.SPLIT('|')[3])
+		ELSE
+			OUTPUT (c.clientName + " has sent the following data: " + data)
+		END IF
+	END PROCEDURE
+
+	PROCEDURE StartListening()
+		server.BeginAcceptClient(AcceptTcpClient, server)
+	END PROCEDURE
+
+	FUNCTION IsConnected(c)
+			IF c != None AND c.Client != None AND c.Client.Connected == true THEN
+				IF c.Client.Poll(SelectMode.SelectRead) = true THEN
+					RETURN !(c.Client.Recieve(NEW BYTE[1]) == 0)
+				END IF
+				RETURN true
+			ELSE
+				RETURN false
+			END IF
+	END FUNCTION
+
+	PROCEDURE AcceptTcpClient(ar)
+		listener = TcpListener(ar).AsyncState
+		clients.Add(new ServerClient(listener.EndAcceptTcpClient(ar)))
+		StartListening()
+		Broadcast("%NAME", clients[clients.Length() -1])
+	END PROCEDURE
+
+	PROCEDURE Broadcast(data, cl)
+		dataToSend = Encryption.Encrypt(data)
+		writer = new DataWriter(cl.connection.GetData())
+		writer.WriteLIne(dataToSend)
+		writer.Flush()
+	END PROCEDURE
+END CLASS
+
+
+CLASS ServerClient
+    tcp = TcpClient
+    clientName = ""
+    
+    PROCEDURE ServerClient(clientSocket)
+        clientName = "Unknown"
+        tcp = clientSocket
+    END PROCEDURE
+END CLASS

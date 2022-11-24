@@ -1,0 +1,126 @@
+clientName = ""
+socketReady = false
+socket = NEW TcpClient
+writer = NEW StreamWriter
+reader = NEW StreamReader
+
+PROCEDURE ConnectToServer()
+	IF socketReady == true THEN
+		RETURN None
+    END IF
+    
+    host = "192.168.1."
+    port = 1803
+    h = STRING(INPUT("Enter your Host IP"))
+    IF h != "" THEN
+        host = h
+    END IF
+    p = INT(INPUT("Enter your Port Number"))
+    IF p != 0 THEN
+        port = p
+    END IF
+    
+    socket = NEW TcpClient(host, port)
+    stream = socket.GetStream()
+    writer = NEW StreamWriter(stream)
+    reader = NEW StreamReader(stream)
+    socketReady = true;
+END PROCEDURE
+
+PROCEDURE Start()
+    ConnectToServer()
+END PROCEDURE
+
+PROCEDURE Update()
+    IF socketReady == true THEN
+        IF stream.DataAvailable == true THEN
+            data = reader.ReadLine()
+            IF data != None THEN
+                OnIncomingData(data)
+            END IF
+        END IF
+    END IF
+END PROCEDURE
+
+PROCEDURE OnIncomingData(rawData)
+	data = Encryption.Decrypt(rawData)
+    IF data == "%NAME" THEN
+        Send("&NAME |" + clientName)
+        RETURN None
+    ELSE IF data.Contains("%STOCKLURT") THEN
+        dataArray = data.split("|")
+        IF dataArray[1] == "~END" THEN
+            StockLookup.dataRecived = true
+            RETURN None
+        ELSE THEN
+			StockLookup.items.APPEND(NEW item)
+			itemNo = LENGHT(StockLookup.items) - 1
+            StockLookup.items[itemNo].id = INTEGER(dataArray[1])
+            StockLookup.items[itemNo].name = STRING(dataArray[2])
+            StockLookup.items[itemNo].price = FLOAT(dataArray[3])
+			StockLookup.items[itemNo].type = INTEGER(dataArray[4])
+        END IF
+    ELSE IF data.Contains("%STAFFLOGRT") THEN
+        dataArray = data.split("|")
+        IF dataArray[1] == "~END" THEN
+            StaffLogIn.dataRecived = true
+            RETURN None
+        ELSE THEN
+			StaffLogIn.staff.APPEND(NEW staffMember)
+			staffNo = LENGTH(StaffLogIn.staff) - 1
+            StaffLogIn.staff.id = INTEGER(dataArray[1])
+            StaffLogIn.staff.firstName = STRING(dataArray[2])
+            StaffLogIn.staff.lastName = STRING(dataArray[3])
+			StaffLogIn.staff.dob = DATETIME(dataArray[4])
+			StaffLogIn.staff.validDate = DATETIME(dataArray[5])
+			StaffLogIn.staff.startDate = DATETIME(dataArray[6])
+			StaffLogIn.staff.permsLv = INTEGER(dataArray[7])
+        END IF
+    ELSE IF data.Contains("%TRANSRT") THEN
+        dataArray = data.split("|")
+        IF dataArray[1] == "~END" THEN
+            TransLookup.dataRecived = true
+            RETURN None
+        ELSE THEN
+			FOR i IN RANGE 0 TO LENGTH(TransLookup.transactions) - 1
+				IF TransLookup.transactions[i].id == INTEGER dataArray[1] THEN
+					transNo = i
+				ELSE THEN
+					TransLookup.transactions.APPEND(NEW transaction)
+					transNo = LENGTH(TransLookup.transactions) - 1
+					TransLookup.transactions[transNo].id = INTEGER(dataArray[1])
+					TransLookup.transactions.date[transNo] = DATETIME(dataArray[2])
+					TransLookup.transactions[transNo].paymentType = INTEGER(dataArray[6])
+					TransLookup.transactions[transNo].transCost = FLOAT(dataArray[7])
+					TransLookup.transactions[transNo].serviceMemberId = INTEGER(dataArray[8])
+				TransLookup.transactions[transNo].itemsInTrans.APPEND(NEW TransItem)
+				transItemNo = LENGHT(TransLookup.transactions[transNo].itemsInTrans) - 1
+				TransLookup.transactions[transNo].itemsInTrans[transItemNo].itemId = INTEGER(dataArray[3])
+				TransLookup.transactions[transNo].itemsInTrans[transItemNo].quantity = INTEGER(dataArray[4])
+				TransLookup.transactions[transNo].itemsInTrans[transItemNo].cost = FLOAT(dataArray[5])
+			NEXT i
+        END IF
+    ELSE THEN
+        OUTPUT("Unknown Data recieved")
+    END IF
+END PROCEDURE
+
+PROCEDURE Send(rawData)
+    IF socketReady = false THEN
+        RETURN None
+    END IF
+	data = Encryption.Encrypt(rawData)
+    writer.WriteLine(data)
+    writer.Flush()
+END PROCEDURE
+
+PROCEDURE CloseSocket()
+    IF socketReady == false THEN
+        RETURN None
+    END IF
+    writer.Close()
+    reader.Close()
+    socket.Close()
+    socketReady = false
+END PROCEDURE
+

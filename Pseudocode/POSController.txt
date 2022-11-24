@@ -1,0 +1,32 @@
+CLASS POSController
+	tillName = "Till 1"
+	staffMember = NEW StaffMember
+	itemsInOrder = NEW DICTIONARY[item, quanitiy]
+	selectedItem = NEW Item
+	subTotal = 0.1
+	
+	PROCEDURE AddItem(itemToAdd)
+		subTotal += itemToAdd.cost
+		FOR i IN RANGE 0 TO LENGTH(itemsInOrder) - 1
+			IF itemsInOrder[i].index.id == itemToAdd.id THEN
+				itemsInOrder[i].value += 1
+				RETURN NONE
+		NEXT i
+		itemsInOrder.APPEND(itemToAdd, 1)
+	END PROCEDURE
+		
+	PROCEDURE IncreaseItem()
+		itemsInOrder(selectedItem).value += 1
+	END PROCEDURFE
+	
+	PROCEDURE DecreaseItem()
+		itemsInOrder(selectedItem).value -= 1
+		IF itemsInOrder(selectedItem).value <= 0 THEN
+			RemoveItem(selectedItem)
+	END PROCEDURE
+	
+	PROCEDURE RemoveItem(itemToRemove)
+		itemsInOrder.REMOVE(selectedItem)
+		selectedItem = NEW Item
+	END PROCEDURE
+END CLASS
