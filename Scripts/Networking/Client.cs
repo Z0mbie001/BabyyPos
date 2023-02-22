@@ -26,9 +26,11 @@ public class Client : MonoBehaviour
     private NetworkStream stream;
     private StreamWriter writer;
     private StreamReader reader;
-    public LinkedList<string> toSend = new LinkedList<string>();
+    public LinkedList<string> toSend = new();
 
     [Header("GameObjects")]
+    public GameObject errorPopupPrefab;
+    public GameObject errorPopupHolder;
     public GameObject hostPanel;
 
     [Header("References")]
@@ -109,17 +111,18 @@ public class Client : MonoBehaviour
             connected = true;
             hostPanel.SetActive(false);
             StartCoroutine(sendingData());
-            if (catReciever.instance != null)
-            {
-                StartCoroutine(catReciever.RequestCategories());
-            }
-            Debug.Log("Connected to server");
-            FindObjectOfType<SaveLoadController>().instance.SaveData();
         }
         catch (Exception e) //if there is an error
         {
             Debug.Log("Socket error : " + e.Message);
+            CreateErrorPopup(e.Message);
         }
+        if (catReciever != null)
+            {
+                StartCoroutine(catReciever.RequestCategories());
+            }
+        Debug.Log("Connected to server");
+        FindObjectOfType<SaveLoadController>().SaveData();
     }
 
     //runs every frame
@@ -148,11 +151,17 @@ public class Client : MonoBehaviour
         string data = encrypter.instance.Decrypt(rawData);
         //Debug.Log("Sever : " + data);
 
+        //Checks if the server needs to respond
+        if (!data.Contains("RECIEVED"))
+        {
+            toSend.AddFirst("&RECIEVED");
+        }
+
         //Works out what the data is for
         if (data == "%NAME")
         {
             //Server is requesting a name
-            toSend.AddFirst("&RECIEVED");
+            
             toSend.AddLast(("&NAME |" + clientName));
             return;
         }else if (data.Contains("%STOCKLURT"))
@@ -162,15 +171,13 @@ public class Client : MonoBehaviour
             if(splitData[1] == "~END")
             {
                 stockLookup.instance.allItemsReturned = true;
-                toSend.AddFirst("&RECIEVED");
                 return;
             }
             else
             {
                 //Debug.Log(splitData[0] + " " + splitData[1] + " " + splitData[2] + " " + splitData[3] + " " + splitData[4]);
-                Item itemToAdd = new Item(Convert.ToInt32(splitData[1]), splitData[2].ToString(), (float)Convert.ToDouble(splitData[3]), Convert.ToInt32(splitData[4]));
-                stockLookup.returnedItems.Add(itemToAdd); //itemToAdd being returned as null
-                toSend.AddFirst("&RECIEVED");
+                Item itemToAdd = new Item(Convert.ToInt64(splitData[1]), splitData[2].ToString(), (float)Convert.ToDouble(splitData[3]), Convert.ToInt32(splitData[4]));
+                stockLookup.returnedItems.Add(itemToAdd); //itemToAdd being returned as null               
                 //toSend.Enqueue("&RECIEVED");
                 return;
             }
@@ -181,8 +188,7 @@ public class Client : MonoBehaviour
             string[] splitData = data.Split('|');   
             if (splitData[1] == "~END")
             {
-                catReciever.instance.allCategoriesRecieved = true;
-                toSend.AddFirst("&RECIEVED");
+                catReciever.instance.allCategoriesRecieved = true;               
                 return;
             }
             else
@@ -190,8 +196,7 @@ public class Client : MonoBehaviour
                 Color returnedColour;
                 ColorUtility.TryParseHtmlString(splitData[3], out returnedColour);
                 Category catToAdd = new Category(Convert.ToInt32(splitData[1]), splitData[2], returnedColour, new Item[20]);
-                catReciever.categoriesRecieved.Add(catToAdd);
-                toSend.AddFirst("&RECIEVED");
+                catReciever.categoriesRecieved.Add(catToAdd);                
                 return;
             }
         }
@@ -201,14 +206,12 @@ public class Client : MonoBehaviour
             string[] splitData = data.Split('|');
             if (splitData[1] == "~END")
             {
-                catReciever.instance.allCategoryItemsReceived = true;
-                toSend.AddFirst("&RECIEVED");
+                catReciever.instance.allCategoryItemsReceived = true;               
                 return;
             }
             else
             {
-                catReciever.categoryItemReturn.Add(new KeyValuePair<int, int>(Convert.ToInt32(splitData[1]), Convert.ToInt32(splitData[2])));
-                toSend.AddFirst("&RECIEVED");
+                catReciever.categoryItemReturn.Add(new KeyValuePair<long, int>(Convert.ToInt64(splitData[1]), Convert.ToInt32(splitData[2])));               
                 return;
             }
         }        
@@ -219,13 +222,11 @@ public class Client : MonoBehaviour
             if (splitData[1] == "~END")
             {
                 //catReciever.instance.allCategoryItemsReceived = true;
-                toSend.AddFirst("&RECIEVED");
-                return;
+                //return;
             }
             else
             {
-                catReciever.itemReturn = new Item(Convert.ToInt32(splitData[1]), splitData[2], (float)Convert.ToDouble(splitData[3]), Convert.ToInt32(splitData[4]));
-                toSend.AddFirst("&RECIEVED");
+                catReciever.itemReturn = new Item(Convert.ToInt64(splitData[1]), splitData[2], (float)Convert.ToDouble(splitData[3]), Convert.ToInt32(splitData[4]));  
                 return;
             }
         }
@@ -235,8 +236,7 @@ public class Client : MonoBehaviour
             string[] splitData = data.Split('|');
             if (splitData[1] == "~END")
             {
-                stafflogin.instance.allStaffMembersReturned = true;
-                toSend.AddFirst("&RECIEVED");
+                stafflogin.instance.allStaffMembersReturned = true;               
                 return;
             }
             else
@@ -248,8 +248,7 @@ public class Client : MonoBehaviour
                 DateTime startDateReturned = DateTime.Parse(splitData[5].ToString());
                 DateTime endDateReturned = DateTime.Parse(splitData[6].ToString());
                 int permissionLevelReturned = Convert.ToInt32(splitData[7]);
-                stafflogin.instance.returnedStaffMembers.Add(new StaffMember(idReturned, lastNameReturned, firstNameReturned, dateOfBirthReturned, startDateReturned, endDateReturned, permissionLevelReturned));
-                toSend.AddFirst("&RECIEVED");
+                stafflogin.instance.returnedStaffMembers.Add(new StaffMember(idReturned, lastNameReturned, firstNameReturned, dateOfBirthReturned, startDateReturned, endDateReturned, permissionLevelReturned));               
                 return;
             }
         }
@@ -264,9 +263,21 @@ public class Client : MonoBehaviour
             DateTime startDateReturned = DateTime.Parse(splitData[5].ToString());
             DateTime endDateReturned = DateTime.Parse(splitData[6].ToString());
             int permissionLevelReturned = Convert.ToInt32(splitData[7]);
-            FindObjectOfType<PaymentController>().instance.returnedStaffMember = new StaffMember(idReturned, lastNameReturned, firstNameReturned, dateOfBirthReturned, startDateReturned, endDateReturned, permissionLevelReturned);
-            toSend.AddFirst("&RECIEVED");
+            FindObjectOfType<PaymentController>().instance.returnedStaffMember = new StaffMember(idReturned, lastNameReturned, firstNameReturned, dateOfBirthReturned, startDateReturned, endDateReturned, permissionLevelReturned);            
             return;
+        }
+        else if (data.Contains("%DIRECTSTOCKRT"))
+        {
+            string[] splitData = data.Split('|');
+            if (splitData[1] == "ERROR")
+            {
+                CreateErrorPopup("Error: No or mulitple data entrires returned");
+            }
+            else
+            {
+                cController.AddItemToOrder(new Item(Convert.ToInt64(splitData[1]), splitData[2], (float)Convert.ToDouble(splitData[3]), Convert.ToInt32(splitData[4])));               
+                return;
+            }
         }
         else if (data.Contains("%RECIEVED") && toSend.Count > 0)
         {
@@ -344,5 +355,12 @@ public class Client : MonoBehaviour
     private void OnDisable()
     {
         CloseScoket();
+    }
+
+    //Creates an error pop-up with the specified message
+    public void CreateErrorPopup(string errorMessage)
+    {
+        GameObject newPopup = Instantiate(errorPopupPrefab, errorPopupHolder.transform);
+        newPopup.GetComponent<ErrorPopupController>().SetData(errorMessage);
     }
 }

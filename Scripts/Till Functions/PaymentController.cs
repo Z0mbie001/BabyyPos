@@ -91,7 +91,7 @@ public class PaymentController : MonoBehaviour
     {
         if(amountRemaining > 0 )
         {
-            Debug.Log("Not fully paid");
+            client.CreateErrorPopup("Not fully paid");
             return;
             //This is another error O pointed out, you can complete a transaction without paying for your items
         }
@@ -103,12 +103,14 @@ public class PaymentController : MonoBehaviour
             string toSend_transactionItem = "&TRANSACTIONITEMDBWR|" + transactionToSend.transactionID.ToString() + "|" + item.Item1.id.ToString() + "|" + item.Item2.ToString() + "|" + item.Item1.price.ToString();
             client.instance.toSend.AddLast(toSend_transactionItem);
         }
-        Debug.Log("Transaction details sent to server");
+        //Debug.Log("Transaction details sent to server");
         ClosePaymentScreen();
+        ageVerificationPanel.SetActive(false);
         clientController.itemsInOrder.Clear();
+        clientController.selectedItem = null;
         clientController.transactionNumber += 1;
         clientController.UpdateOrderButtons();
-        //clientController.orderSubTotal = 0;
+        paymentType = 0;
         clientController.CalculateSubTotal();
         FindObjectOfType<SaveLoadController>().instance.SaveData();
     }
@@ -120,25 +122,30 @@ public class PaymentController : MonoBehaviour
         string transID = "";
         //transID = Encoding.Default.GetBytes(clientController.instance.tillName.ToCharArray())[0].ToString() + clientController.instance.transactionNumber;
         //for(int i = 0; i < clientController.instance.tillName.Length; i++)
-        for(int i = 0; i < clientController.instance.tillName.Length && i < 5; i++)
+        for(int i = 0; i < clientController.instance.tillName.Length && i < 11; i++)
         {
             transID += Encoding.Default.GetBytes(clientController.instance.tillName.ToCharArray())[i].ToString();
         }
         transID += DateTime.Now.DayOfYear.ToString() + DateTime.Now.Year.ToString();
         transID += clientController.instance.transactionNumber;
-        transID = transID.Substring(transID.Length - 10, 9);
-        Debug.Log(transID);
+        //Debug.Log(transID);
+        //transID = transID.Substring(transID.Length - 9, 8);
+        if(transID.Length > 18)
+        {
+            transID = transID.Substring(transID.Length - 17, transID.Length - 1);
+        }
         DateTime currentDateTime = DateTime.Now;
         clientController.instance.UpdateOrderButtons();
         clientController.instance.CalculateSubTotal();
         float transAmount = clientController.instance.orderSubTotal;
         int staffID = authorisingStaffMember.staffID;
-        List<(Item, int)> items = new List<(Item, int)>();
+        List<(Item, int)> items = new();
         foreach (KeyValuePair<Item, int> item in clientController.instance.itemsInOrder)
         {
             items.Add((item.Key, item.Value));
         }
-        transDetails = new Transaction(Convert.ToInt32(transID), currentDateTime, transAmount, paymentType, staffID, items);
+        long.TryParse(transID, out long transIDInt);
+        transDetails = new Transaction(transIDInt, currentDateTime, transAmount, paymentType, staffID, items);
         return transDetails;
     }
 
@@ -161,33 +168,46 @@ public class PaymentController : MonoBehaviour
         else if(typeOfPayment == 2)
         {
             CashPayment();
-            paymentType = 2;
+            if (paymentType == 0)
+            {
+                paymentType = 2;
+            }
+            else
+            {
+                paymentType = 3;
+            }
         }
     }
 
     //Used when cash is being payed
     public void CashPayment()
     {
-        float inputAmount;
+        float inputAmount = amountRemaining;
         cashPaymentScreen.SetActive(true);
-        if (cashAmountInput.text == "")
+        if (cashAmountInput.text != "")
         {
-            inputAmount = amountRemaining;
+            float.TryParse(cashAmountInput.text, out inputAmount);
+            if(inputAmount == 0)
+            {
+                cashAmountInput.text = "";
+                paymentType = 0;
+                client.CreateErrorPopup("Float lenght exceeded limit");
+                return;
+            }
+            else
+            {
+                amountPaid += inputAmount;
+                amountRemaining = clientController.orderSubTotal - amountPaid;
+                GameObject newButton = Instantiate(paymentAmountPrefab, paymentAmountHolder.transform);
+                PaymentButtonController payButtonController = newButton.GetComponent<PaymentButtonController>();
+                payButtonController.amount = inputAmount;
+                payButtonController.paymentName = "Cash";
+                payButtonController.UpdateButtonDetails();
+                cashAmountInput.text = "";
+                paymentButtons.Add(newButton);
+                UpdateText();
+            }
         }
-        else
-        {
-            inputAmount = (float)Convert.ToDouble(cashAmountInput.text);
-        }
-        amountPaid += inputAmount;
-        amountRemaining = clientController.orderSubTotal - amountPaid;
-        GameObject newButton = Instantiate(paymentAmountPrefab, paymentAmountHolder.transform);
-        PaymentButtonController payButtonController = newButton.GetComponent<PaymentButtonController>();
-        payButtonController.amount = inputAmount;
-        payButtonController.paymentName = "Cash";
-        payButtonController.UpdateButtonDetails();
-        cashAmountInput.text = "";
-        paymentButtons.Add(newButton);
-        UpdateText();
     }
     
     //Used to close the chas payment screen
@@ -280,6 +300,7 @@ public class PaymentController : MonoBehaviour
         authorisationPanel.SetActive(true);
         returnedStaffMember = null;
         yield return new WaitUntil(() => returnedStaffMember != null);
+        Debug.Log("Server returned : " + returnedStaffMember.lastName);
         if(DateTime.Now >= returnedStaffMember.dateOfBirth.AddYears(18))
         {
             authorisingStaffMember = returnedStaffMember;
@@ -297,7 +318,8 @@ public class PaymentController : MonoBehaviour
     //Sends a request to the server for authorisation staff member
     public void OnAuthPress()
     {
-        string toSend = "&AUTHSTAFFBDR|" + authorisationInput.text;
+        string toSend = "&AUTHSTAFFDBR|" + authorisationInput.text;
+        authorisationInput.text = "";
         client.toSend.AddLast(toSend);
     }
 

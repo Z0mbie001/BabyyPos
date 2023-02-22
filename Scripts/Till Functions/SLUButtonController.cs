@@ -31,6 +31,7 @@ public class SLUButtonController : MonoBehaviour
         {
             GameObject popup = Instantiate(modifyPopup, FindObjectOfType<Canvas>().transform);
             popup.GetComponent<StockModifyController>().item = item;
+            popup.GetComponent<StockModifyController>().SetUIElementValues();
         }
         else
         {

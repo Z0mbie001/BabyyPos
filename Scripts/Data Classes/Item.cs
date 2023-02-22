@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class Item
 {
-    public int id = 0;
+    public long id = 0;
     public string name = "Item";
     public float price = 0.5f;
     public int type = 0;
 
     //initalising function
-    public Item(int idToSet, string nameToSet, float priceToSet, int typeToSet)
+    public Item(long idToSet, string nameToSet, float priceToSet, int typeToSet)
     {
         this.id = idToSet;
         this.name = nameToSet;

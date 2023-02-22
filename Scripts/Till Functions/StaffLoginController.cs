@@ -32,7 +32,7 @@ public class StaffLoginController : MonoBehaviour
     {
         if(staffIDInput.text == "")
         {
-            Debug.Log("No ID Input detected");
+            client.CreateErrorPopup("No ID Input Detected");
             return;
         }
         else
@@ -44,6 +44,11 @@ public class StaffLoginController : MonoBehaviour
     //Processes the staff login, sending the request and recieving the returned data
     IEnumerator StaffLogin()
     {
+        int.TryParse(staffIDInput.text, out int testParse);
+        if(testParse == 0)
+        {
+            yield return null;
+        }
         string q_toSend = "&STAFFLOGINDBR|" + staffIDInput.text;
         staffIDInput.text = "";
         allStaffMembersReturned = false;
@@ -52,12 +57,12 @@ public class StaffLoginController : MonoBehaviour
         yield return new WaitUntil(() => allStaffMembersReturned);
         if(returnedStaffMembers.Count > 1)
         {
-            Debug.Log("More than 1 staff members returned");
+            client.CreateErrorPopup("More than 1 staff member returned");
             yield return null;
         }
         else if(returnedStaffMembers.Count <= 0)
         {
-            Debug.Log("No staff members returned");
+            client.CreateErrorPopup("No staff members returned");
             yield return null;
         }
         else
@@ -72,7 +77,7 @@ public class StaffLoginController : MonoBehaviour
     {
         if(staffIDInput.text == "")
         {
-            Debug.Log("No ID Input detected");
+            client.CreateErrorPopup("No ID Input detected");
             return;
         }
         else
@@ -84,6 +89,11 @@ public class StaffLoginController : MonoBehaviour
     //Processes a staff login request for the admin page
     IEnumerator StaffLoginAdmin()
     {
+        int.TryParse(staffIDInput.text, out int testParse);
+        if (testParse == 0)
+        {
+            yield return null;
+        }
         string q_toSend = "&STAFFLOGINDBR|" + staffIDInput.text;
         staffIDInput.text = "";
         allStaffMembersReturned = false;
@@ -92,21 +102,32 @@ public class StaffLoginController : MonoBehaviour
         yield return new WaitUntil(() => allStaffMembersReturned);
         if(returnedStaffMembers.Count > 1)
         {
-            Debug.Log("More than 1 staff members returned");
+            client.CreateErrorPopup("More than 1 Staff Member returned");
             yield return null;
         }
         else if(returnedStaffMembers.Count <= 0)
         {
-            Debug.Log("No staff members returned");
+            client.CreateErrorPopup("No Staff Members Returned");
             yield return null;
         }else if (returnedStaffMembers[0].permissionLevel < 4 && returnedStaffMembers[0].permissionLevel != -1)
         {
-            Debug.Log("Insufficent Permissions");
+            client.CreateErrorPopup("Insufficent Permissions to access Admin Terminal");
             yield return null;
         }
         else
         {
             staffLoginPanel.SetActive(false);
         }
+    }
+
+    //Adds a logout feature
+    public void Logout()
+    {
+        staffIDInput.text = "";
+        if(FindObjectOfType<ClientController>() != null)
+        {
+            FindObjectOfType<ClientController>().instance.activeStaffMember = null;
+        }
+        staffLoginPanel.SetActive(true);
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,6 +21,7 @@ public class ClientController : MonoBehaviour
     public Item selectedItem;
     public Text subTotalText;
     public InputField quantityInput;
+    public InputField productIDInput;
 
     [Header("Holders and Prefabs")]
     public GameObject orderButtonPrefab;
@@ -53,7 +55,7 @@ public class ClientController : MonoBehaviour
     //Adds an item to the order
     public void AddItemToOrder(Item itemToAdd)
     {
-        if(!itemsInOrder.ContainsKey(itemToAdd))
+        if (!CheckObjectInArray<Item>(itemToAdd, itemsInOrder.Keys.ToArray<Item>()))
         {
             itemsInOrder.Add(itemToAdd, 1);
             OrderButtonController newButton = Instantiate(orderButtonPrefab, orderContentHolder.transform).GetComponent<OrderButtonController>();
@@ -98,6 +100,7 @@ public class ClientController : MonoBehaviour
                 quantityInput.text = "";
             }
         }
+        productIDInput.text = string.Empty;
     }
 
     //Removes and item from the order
@@ -129,7 +132,16 @@ public class ClientController : MonoBehaviour
         {
             return;
         }
-        itemsInOrder[selectedItem] += 1;
+        int.TryParse((itemsInOrder[selectedItem] + 1).ToString(), out int tempQuantity);
+        if(tempQuantity < itemsInOrder[selectedItem])
+        {
+            return;
+        }
+        else
+        {
+            itemsInOrder[selectedItem] = tempQuantity;
+            FindObjectOfType<Client>().CreateErrorPopup("Quanity exceeded maximum limit");
+        }
         UpdateOrderButtons();
         CalculateSubTotal();
     }    
@@ -217,15 +229,44 @@ public class ClientController : MonoBehaviour
         }
         foreach(Item item in activeCategory.itemsInCategory)
         {
-            if(item == null)
+            if (item != null)
             {
-                return;
+
+
+                GameObject newButton = Instantiate(FindObjectOfType<StockLookup>().instance.SLUButton, categoryItemHolder.transform);
+                SLUButtonController sLUButtonController = newButton.GetComponent<SLUButtonController>();
+                sLUButtonController.item = item;
+                sLUButtonController.SetText();
+                activeCategoryItemButtons.Add(newButton);
             }
-            GameObject newButton = Instantiate(FindObjectOfType<StockLookup>().instance.SLUButton, categoryItemHolder.transform);
-            SLUButtonController sLUButtonController = newButton.GetComponent<SLUButtonController>();
-            sLUButtonController.item = item;
-            sLUButtonController.SetText();
-            activeCategoryItemButtons.Add(newButton);
         }
     }
+
+    //Requests for an item to be added to the order
+    public void SubmitBarcodeNumber()
+    {
+        long.TryParse(productIDInput.text, out long productId);
+        //Create a request to the server
+        string q_toSend = "&DIRECTSTOCKDBR|" + productId;
+        FindObjectOfType<Client>().instance.toSend.AddLast(q_toSend);
+    }
+
+    public bool CheckObjectInArray<type>(type item, type[] array)
+    {
+        foreach(type typeItem in array)
+        {
+            if(typeItem.Equals(item) && typeItem != null)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /*
+     * ISSUE: Items not increasing quantity
+     * DESC: When multiple of the same item are added the quanity of the first should increase, this wasnt happening
+     * STATUS: Resolved
+     * SOLUTION: Programmed a custom loop to check if the item is in the dictonary already
+     */
 }

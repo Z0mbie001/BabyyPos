@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class SaveLoadController : MonoBehaviour
@@ -28,7 +29,10 @@ public class SaveLoadController : MonoBehaviour
     {
         instance = this;
         client = FindObjectOfType<Client>();
-        clientController = FindObjectOfType<ClientController>();
+        if (FindObjectOfType<ClientController>() != null)
+        {
+            clientController = FindObjectOfType<ClientController>().instance;
+        }
         jsonSavePath = Application.persistentDataPath.ToString() + "/ClientSaveData.json";
         LoadData();
     }
@@ -36,17 +40,20 @@ public class SaveLoadController : MonoBehaviour
     //Fetches the data needed to save
     public SaveData GetDataToSave()
     {
-        SaveData data = new SaveData();
-        data.tillName = client.instance.clientName;
-        data.hostIP = client.instance.hostIP;
-        data.hostPort = client.instance.hostPort;
-        if(clientController != null)
+        SaveData data = new SaveData
         {
-            data.transactionNumber = clientController.instance.transactionNumber;
+            tillName = client.clientName,
+            hostIP = client.hostIP,
+            hostPort = client.hostPort
+        };
+        if (clientController != null)
+        {
+            //Debug.Log("Transaciton Number retrieved");
+            data.transactionNumber = clientController.transactionNumber;
         }
         else
         {
-            data.transactionNumber = -1;
+            data.transactionNumber = 888;
         }
         return data;
     }
@@ -67,13 +74,13 @@ public class SaveLoadController : MonoBehaviour
         try
         {
             SaveData loadedData = JsonUtility.FromJson<SaveData>(File.ReadAllText(jsonSavePath));
-            client.instance.clientName = loadedData.tillName;
-            client.instance.hostIP = loadedData.hostIP;
-            client.instance.hostPort = loadedData.hostPort;
-            if (clientController.instance != null)
+            client.clientName = loadedData.tillName;
+            client.hostIP = loadedData.hostIP;
+            client.hostPort = loadedData.hostPort;
+            if (clientController != null)
             {
-                clientController.instance.tillName = loadedData.tillName;
-                clientController.instance.transactionNumber = loadedData.transactionNumber;
+                clientController.tillName = loadedData.tillName;
+                clientController.transactionNumber = loadedData.transactionNumber;
             }
             loadCompleted = true;
             Debug.Log("Loaded Data from file");
@@ -82,9 +89,9 @@ public class SaveLoadController : MonoBehaviour
         {
             Debug.LogError("SaveLoad Error : " + e.Message);
         }
-        if (!client.instance.connected)
+        if (!client.connected)
         {
-            client.instance.ConnectToServer();
+            client.ConnectToServer();
         }
     }
 
@@ -104,12 +111,6 @@ public class SaveLoadController : MonoBehaviour
 
     //Runs when the application closes
     private void OnApplicationQuit()
-    {
-        SaveData();
-    }
-
-    //Runs when the object is disabled
-    private void OnDisable()
     {
         SaveData();
     }

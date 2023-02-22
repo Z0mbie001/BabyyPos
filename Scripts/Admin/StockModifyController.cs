@@ -96,4 +96,12 @@ public class StockModifyController : MonoBehaviour
     {
         confirmationPanel.SetActive(false);
     }
+
+    //Sets the inital values for the UI elements
+    public void SetUIElementValues()
+    {
+        nameInput.text = item.name;
+        priceInput.text = item.price.ToString();
+        typeInput.text = item.type.ToString();
+    }
 }

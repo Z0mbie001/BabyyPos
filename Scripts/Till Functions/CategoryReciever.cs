@@ -9,7 +9,7 @@ public class CategoryReciever : MonoBehaviour
     [Header("Catagories")]
     public List<Category> categoriesRecieved = new List<Category>();
     public bool allCategoriesRecieved;
-    public List<KeyValuePair<int, int>> categoryItemReturn = new List<KeyValuePair<int, int>>(); //item id, item pos
+    public List<KeyValuePair<long, int>> categoryItemReturn = new List<KeyValuePair<long, int>>(); //item id, item pos
     public bool allCategoryItemsReceived;
     public Item itemReturn;
 
@@ -47,7 +47,7 @@ public class CategoryReciever : MonoBehaviour
         {
             //Creates a secondary request to the server
             string q2_toSend = "&CATEGORYITEMSDBR|" + cat.categoryID.ToString();
-            categoryItemReturn = new List<KeyValuePair<int, int>>();
+            categoryItemReturn = new List<KeyValuePair<long, int>>();
             allCategoryItemsReceived = false;
             client.instance.toSend.AddLast(q2_toSend);
 

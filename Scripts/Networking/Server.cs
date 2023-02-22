@@ -21,13 +21,15 @@ public class Server : MonoBehaviour
     private List<ServerClient> disconectList;
 
     [Header("Server Infrastaucture")]
-    public LinkedList<(string, ServerClient)> toSend = new LinkedList<(string, ServerClient)>();
+    private LinkedList<(string, ServerClient)> toSend = new();
     private TcpListener server;
     private bool serverStarted;
 
     [Header("References")]
     private ServerController serverController;
     private Encryption encrypter;
+
+    public LinkedList<(string, ServerClient)> ToSend { get => toSend; set => toSend = value; }
 
     //Run before first frame, starts the server
     private void Start()
@@ -50,7 +52,7 @@ public class Server : MonoBehaviour
         }
         catch (Exception e)
         {
-            Debug.Log("Socket error: " + e.Message);
+            Debug.LogError("Socket error: " + e.Message);
         }
     }
 
@@ -77,7 +79,7 @@ public class Server : MonoBehaviour
                 NetworkStream s = c.tcp.GetStream();
                 if (s.DataAvailable)
                 {
-                    StreamReader reader = new StreamReader(s, true);
+                    StreamReader reader = new(s, true);
                     string data = reader.ReadLine();
 
                     if (data != null)
@@ -91,7 +93,7 @@ public class Server : MonoBehaviour
         for (int i = 0; i < disconectList.Count - 1; i++)
         {
             //Broadcast(disconectList[i].clientName + " has dissconeted", clients);
-            Debug.Log("Client disconnected : " + disconectList[i].clientName);
+            Debug.LogWarning("Client disconnected : " + disconectList[i].clientName);
             clients.Remove(disconectList[i]);
             disconectList.RemoveAt(i);
         }
@@ -100,103 +102,106 @@ public class Server : MonoBehaviour
     //called when new data is recieved
     private void OnIncomingData(ServerClient c, string rawData)
     {
-        string data = encrypter.instance.Decrypt(rawData); //Decrypts teh data
-        //Debug.Log(c + " : " + data);
+        string data = encrypter.instance.Decrypt(rawData); //Decrypts the data
+        //Debug.Log(c.clientName + " : " + data);
 
+        //Checks to see if the server needs to respond
+        if(!data.Contains("RECIEVED"))
+        {
+            ToSend.AddFirst(("%RECIEVED", c));
+        }
         //Checks to see what type of request is being recieved
         if (data.Contains("&NAME"))
         {
             c.clientName = data.Split('|')[1];
-            Debug.Log("Name Returned from " + c.clientName);
-            toSend.AddFirst(("%RECIEVED", c));
+            //Debug.Log("Name Returned from " + c.clientName);
             return;
         }
         else if (data.Contains("&STOCKLUDBR"))
         {
             string[] splitData = data.Split('|');
-            Debug.Log("Stock Lookup request from " + c.clientName + " has been received with the parameters : " + splitData[1] + " and " + splitData[2]);
-            serverController.instance.StockLookupRequest(c, Convert.ToInt32(splitData[1]), splitData[2]);
-            toSend.AddLast(("%RECIEVED", c));
-            //toSend.Enqueue(("%RECIEVED", c));
+            //Debug.Log("Stock Lookup request from " + c.clientName + " has been received with the parameters : " + splitData[1] + " and " + splitData[2]);
+            serverController.instance.StockLookupRequest(c, Convert.ToInt64(splitData[1]), splitData[2]);
             return;
         }
         else if (data.Contains("&CATEGORYDBR"))
         {
             string[] splitData = data.Split('|');
-            Debug.Log("Category request from " + c.clientName + " has been received with the parameter : " + splitData[1]);
+            //Debug.Log("Category request from " + c.clientName + " has been received with the parameter : " + splitData[1]);
             serverController.instance.CategoryRequest(c, Convert.ToInt32(splitData[1]));
-            toSend.AddFirst(("%RECIEVED", c));
         }
         else if (data.Contains("&CATEGORYITEMSDBR"))
         {
             string[] splitData = data.Split('|');
-            Debug.Log("Category item request from " + c.clientName + " has been received with the parameter : " + splitData[1]);
+            //Debug.Log("Category item request from " + c.clientName + " has been received with the parameter : " + splitData[1]);
             serverController.instance.CategoryItemRequest(c, Convert.ToInt32(splitData[1]));
-            toSend.AddFirst(("%RECIEVED", c));
         }
         else if (data.Contains("&CATEGORYITEMNAMEDBR"))
         {
             string[] splitData = data.Split('|');
-            Debug.Log("Category item name request from " + c.clientName + " has been received with the parameter : " + splitData[1]);
-            serverController.instance.CategoryItemDataRequest(c, Convert.ToInt32(splitData[1]));
-            toSend.AddFirst(("%RECIEVED", c));
+            //Debug.Log("Category item name request from " + c.clientName + " has been received with the parameter : " + splitData[1]);
+            serverController.instance.CategoryItemDataRequest(c, Convert.ToInt64(splitData[1]));
         }
         else if (data.Contains("&STAFFLOGINDBR"))
         {
             string[] splitData = data.Split('|');
-            Debug.Log("Staff Login request from " + c.clientName + " has been received with the parameter : " + splitData[1]);
+            //Debug.Log("Staff Login request from " + c.clientName + " has been received with the parameter : " + splitData[1]);
             serverController.instance.StaffLoginRequest(c, Convert.ToInt32(splitData[1]));
-            toSend.AddFirst(("%RECIEVED", c));
         }
         else if (data.Contains("&TRANSACTIONDBWR"))
         {
             string[] splitData = data.Split('|');
-            Debug.Log("Transaction write request from " + c.clientName + " has been recieved with the parameters : " + splitData[1] + ", " + splitData[2] + ", " + splitData[3] + ", " + splitData[4] + " and " + splitData[5]);
-            Transaction transToAdd = new Transaction(Convert.ToInt32(splitData[1]), DateTime.Parse(splitData[2]), (float)Convert.ToDouble(splitData[3]), Convert.ToInt32(splitData[4]), Convert.ToInt32(splitData[5]), new List<(Item, int)>());
+            //Debug.Log("Transaction write request from " + c.clientName + " has been recieved with the parameters : " + splitData[1] + ", " + splitData[2] + ", " + splitData[3] + ", " + splitData[4] + " and " + splitData[5]);
+            Transaction transToAdd = new Transaction(Convert.ToInt64(splitData[1]), DateTime.Parse(splitData[2]), (float)Convert.ToDouble(splitData[3]), Convert.ToInt32(splitData[4]), Convert.ToInt32(splitData[5]), new List<(Item, int)>());
             serverController.instance.WriteTransactionData(c, transToAdd);
-            toSend.AddFirst(("%RECIEVED", c));
         }
         else if (data.Contains("&TRANSACTIONITEMDBWR"))
         {
             string[] splitData = data.Split('|');
-            Debug.Log("Transaction Item write request from " + c.clientName + " has been recieved with the parameters : " + splitData[1] + ", " + splitData[2] + ", " + splitData[3] + " and " + splitData[4]);
-            serverController.instance.WriteTransactionItemData(c, Convert.ToInt32(splitData[1]), Convert.ToInt32(splitData[2]), Convert.ToInt32(splitData[3]), (float)Convert.ToDouble(splitData[4]));
-            toSend.AddFirst(("%RECIEVED", c));
+            //Debug.Log("Transaction Item write request from " + c.clientName + " has been recieved with the parameters : " + splitData[1] + ", " + splitData[2] + ", " + splitData[3] + " and " + splitData[4]);
+            serverController.instance.WriteTransactionItemData(c, Convert.ToInt64(splitData[1]), Convert.ToInt32(splitData[2]), Convert.ToInt32(splitData[3]), (float)Convert.ToDouble(splitData[4]));
         }
         else if (data.Contains("&AUTHSTAFFDBR"))
         {
             string[] splitData = data.Split('|');
-            Debug.Log("Authorising Staff member request from " + c.clientName + " has been recieved with the parameter : " + splitData[1]);
+            //Debug.Log("Authorising Staff member request from " + c.clientName + " has been recieved with the parameter : " + splitData[1]);
             serverController.instance.AuthStaffMemberData(c, Convert.ToInt32(splitData[1]));
-            toSend.AddFirst(("%RECIEVED", c));
         }
         else if (data.Contains("&RECIEVED"))
         {
-            toSend.RemoveFirst();
-            //toSend.Dequeue();
+            ToSend.RemoveFirst();
             return;
         }
         else if (data.Contains("&STOCKWR"))
         {
             string[] splitData = data.Split('|');
             serverController.instance.WriteStockItem(c, Convert.ToInt32(splitData[1]), splitData[2], (float)Convert.ToDouble(splitData[3]), Convert.ToInt32(splitData[4]));
-            toSend.AddFirst(("%RECIEVED", c));
         }
         else if (data.Contains("&STOCKDELETER"))
         {
             string[] splitData = data.Split('|');
             FindObjectOfType<DatabaseManager>().instance.DeleteValueInStockTable(Convert.ToInt32(splitData[1]));
-            toSend.AddFirst(("%RECIEVED", c));
         }
         else if (data.Contains("&STAFFWR"))
         {
             string[] splitData = data.Split('|');
-            serverController.instance.WriteStaffMember(c, Convert.ToInt32(splitData[0]), splitData[1], splitData[2], splitData[3], splitData[4], splitData[5], Convert.ToInt32(splitData[6]));
-            toSend.AddFirst(("%RECIEVED", c));
+            serverController.instance.WriteStaffMember(c, Convert.ToInt32(splitData[1]), splitData[2], splitData[3], splitData[4], splitData[5], splitData[6], Convert.ToInt32(splitData[7]));
+
+            /*
+             * ERROR: INT Overflow Error
+             * DESCRIPTION: String-Int coversion not accepted
+             * STATUS: Resolved
+             * SOLUTION: Correct 'splitData' array counting (all were -1 out)
+             */
+        }
+        else if (data.Contains("&DIRECTSTOCKDBR"))
+        {
+            string[] splitData = data.Split('|');
+            serverController.instance.DirectStockRequest(c, Convert.ToInt32(splitData[1]));
         }
         else
         {
-            Debug.Log(c.clientName + " has sent the following message: " + data);
+            Debug.LogWarning(c.clientName + " has sent the following message: " + data);
             return;
         }
     }
@@ -236,11 +241,12 @@ public class Server : MonoBehaviour
     {
         TcpListener listener = (TcpListener)ar.AsyncState;
         clients.Add(new ServerClient(listener.EndAcceptTcpClient(ar)));
+        Debug.Log("New Client Connected");
         //request a name from the client that just connected
-        if (clients[clients.Count - 1].clientName == "Unknown")
+        if (clients[^1].clientName == "Unknown")
         {
-            toSend.AddLast(("%NAME", clients[clients.Count - 1]));
-            Debug.Log("Requesting Client Name");
+            ToSend.AddLast(("%NAME", clients[clients.Count - 1]));
+            //Debug.Log("Requesting Client Name");
         }
         StartListening();
     }
@@ -257,15 +263,15 @@ public class Server : MonoBehaviour
             writer.Flush();
             if (rawData.Contains("RECIEVED"))
             {
-                if(toSend.FirstOrDefault().Item2 != null)
+                if(ToSend.FirstOrDefault().Item2 != null)
                 {
-                    toSend.RemoveFirst();
+                    ToSend.RemoveFirst();
                 }
             }
         }
         catch (Exception e) //if there is an error
         {
-            Debug.Log("Write error : " + e.Message + "to client " + c.clientName);
+            Debug.LogError("Write error : " + e.Message + "to client " + c.clientName);
             return;
         }
 
@@ -277,13 +283,13 @@ public class Server : MonoBehaviour
         while (true)
         {
             //Debug.Log("Server Checking to send");
-            if (toSend.Count != 0)
+            if (ToSend.Count != 0)
             {
                 //Debug.Log(toSend.Peek().Item1);
-                int listLength = toSend.Count;
-                Send(toSend.First().Item1, toSend.First().Item2);
+                int listLength = ToSend.Count;
+                Send(ToSend.First().Item1, ToSend.First().Item2);
                 //Send(toSend.Peek().Item1, toSend.Peek().Item2);
-                yield return new WaitUntil(() => toSend.Count != listLength);
+                yield return new WaitUntil(() => ToSend.Count != listLength);
                 yield return new WaitForEndOfFrame();
             }
             else
@@ -291,6 +297,11 @@ public class Server : MonoBehaviour
                 yield return new WaitForEndOfFrame();
             }
         }
+    }
+
+    private void OnApplicationQuit()
+    {
+        server.Stop();
     }
 }
 

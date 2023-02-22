@@ -16,7 +16,7 @@ public class StockLookup : MonoBehaviour
     public GameObject stockLUPanel;
     public GameObject SLUButton;
     public GameObject SLUContent;
-    private List<GameObject> activeSLUButtons = new List<GameObject>();
+    private List<GameObject> activeSLUButtons = new();
 
     [Header("InputFields")]
     public InputField productNameInput;
@@ -66,6 +66,7 @@ public class StockLookup : MonoBehaviour
     {
         if(returnedItems.Count <= 0)
         {
+           FindObjectOfType<Client>().CreateErrorPopup("No Items Returned");
             return;
         }
         foreach(Item item in returnedItems)
