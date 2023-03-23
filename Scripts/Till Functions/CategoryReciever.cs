@@ -20,21 +20,16 @@ public class CategoryReciever : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //Sets the script as an instance
         instance = this;
+        //Creates references to other scripts
         clientController = FindObjectOfType<ClientController>();
         client = clientController.GetComponent<Client>();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 
     //Requests Categories from the server
     public IEnumerator RequestCategories()
     {
-        //Debug.Log("Requesting Categories from server");
         //Creates the initial category request
         string q_toSend = "&CATEGORYDBR|" + clientController.instance.categoryNumber.ToString();
         client.instance.toSend.AddLast(q_toSend);

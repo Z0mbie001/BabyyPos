@@ -43,7 +43,9 @@ public class Client : MonoBehaviour
     //A proceudre that runs in the first frame
     private void Start()
     {
+        //Sets the script as an instance
         instance = this;
+        //Creates references to other scripts
         cController = FindObjectOfType<ClientController>();
         catReciever = FindObjectOfType<CategoryReciever>();
         encrypter = FindObjectOfType<Encryption>();
@@ -110,18 +112,21 @@ public class Client : MonoBehaviour
             socketReady = true;
             connected = true;
             hostPanel.SetActive(false);
-            StartCoroutine(sendingData());
+            StartCoroutine(SendingData());
         }
-        catch (Exception e) //if there is an error
+        catch (Exception e) //if there is an error (means the program doesn't crash)
         {
             Debug.Log("Socket error : " + e.Message);
             CreateErrorPopup(e.Message);
+            return;
         }
+        //If there is a category reciever
         if (catReciever != null)
             {
                 StartCoroutine(catReciever.RequestCategories());
             }
         Debug.Log("Connected to server");
+        //Save the data used to connect
         FindObjectOfType<SaveLoadController>().SaveData();
     }
 
@@ -157,54 +162,47 @@ public class Client : MonoBehaviour
             toSend.AddFirst("&RECIEVED");
         }
 
-        //Works out what the data is for
-        if (data == "%NAME")
+        //Works out what the data is for and processes it
+        if (data == "%NAME") //Server is requesting a name
         {
-            //Server is requesting a name
             
             toSend.AddLast(("&NAME |" + clientName));
             return;
-        }else if (data.Contains("%STOCKLURT"))
+        }else if (data.Contains("%STOCKLURT")) //Server is retuning stock data
         {
-            //Server is returning StockLookup data
-            string[] splitData = data.Split('|');
-            if(splitData[1] == "~END")
+            string[] splitData = data.Split('|'); //Split up the data
+            if(splitData[1] == "~END") //Check for the end element
             {
                 stockLookup.instance.allItemsReturned = true;
                 return;
             }
-            else
-            {
-                //Debug.Log(splitData[0] + " " + splitData[1] + " " + splitData[2] + " " + splitData[3] + " " + splitData[4]);
-                Item itemToAdd = new Item(Convert.ToInt64(splitData[1]), splitData[2].ToString(), (float)Convert.ToDouble(splitData[3]), Convert.ToInt32(splitData[4]));
-                stockLookup.returnedItems.Add(itemToAdd); //itemToAdd being returned as null               
-                //toSend.Enqueue("&RECIEVED");
+            else 
+            { 
+                Item itemToAdd = new(Convert.ToInt64(splitData[1]), splitData[2].ToString(), (float)Convert.ToDouble(splitData[3]), Convert.ToInt32(splitData[4]));
+                stockLookup.returnedItems.Add(itemToAdd);           
                 return;
             }
         }
-        else if (data.Contains("CATEGORYRT"))
+        else if (data.Contains("CATEGORYRT")) //Server is returning category data
         {
-            //Server is returning Category data
-            string[] splitData = data.Split('|');   
-            if (splitData[1] == "~END")
+            string[] splitData = data.Split('|'); //Splits up the data 
+            if (splitData[1] == "~END") //Checks for the end element
             {
                 catReciever.instance.allCategoriesRecieved = true;               
                 return;
             }
             else
-            {
-                Color returnedColour;
-                ColorUtility.TryParseHtmlString(splitData[3], out returnedColour);
-                Category catToAdd = new Category(Convert.ToInt32(splitData[1]), splitData[2], returnedColour, new Item[20]);
+            { 
+                ColorUtility.TryParseHtmlString(splitData[3], out Color returnedColour);
+                Category catToAdd = new(Convert.ToInt32(splitData[1]), splitData[2], returnedColour, new Item[20]);
                 catReciever.categoriesRecieved.Add(catToAdd);                
                 return;
             }
         }
-        else if (data.Contains("%CATEGORYITEMRT"))
+        else if (data.Contains("%CATEGORYITEMRT")) //Server is returning category item data
         {
-            //Server is returning category item data
-            string[] splitData = data.Split('|');
-            if (splitData[1] == "~END")
+            string[] splitData = data.Split('|'); //Splits up the data
+            if (splitData[1] == "~END") //Checks for the end element
             {
                 catReciever.instance.allCategoryItemsReceived = true;               
                 return;
@@ -215,26 +213,19 @@ public class Client : MonoBehaviour
                 return;
             }
         }        
-        else if (data.Contains("%CATEGORYITEMNAMERT"))
+        else if (data.Contains("%CATEGORYITEMNAMERT")) //Server is returning category item name data
         {
-            //Server is returning the category item name
-            string[] splitData = data.Split('|');
-            if (splitData[1] == "~END")
-            {
-                //catReciever.instance.allCategoryItemsReceived = true;
-                //return;
-            }
-            else
+            string[] splitData = data.Split('|'); //Splits up the data
+            if (splitData[1] != "~END") //Checks for the end element
             {
                 catReciever.itemReturn = new Item(Convert.ToInt64(splitData[1]), splitData[2], (float)Convert.ToDouble(splitData[3]), Convert.ToInt32(splitData[4]));  
                 return;
             }
         }
-        else if (data.Contains("%STAFFLOGINRT"))
+        else if (data.Contains("%STAFFLOGINRT")) //Server is returning staff data
         {
-            //Server is returning staff data
-            string[] splitData = data.Split('|');
-            if (splitData[1] == "~END")
+            string[] splitData = data.Split('|'); //Splits up the data
+            if (splitData[1] == "~END") //Checks for then end element
             {
                 stafflogin.instance.allStaffMembersReturned = true;               
                 return;
@@ -252,10 +243,10 @@ public class Client : MonoBehaviour
                 return;
             }
         }
-        else if (data.Contains("%AUTHSTAFFRT"))
+        else if (data.Contains("%AUTHSTAFFRT")) //Server is returning the authorising staff data
         {
-            //Server is returning data for a authorising staff member
-            string[] splitData = data.Split('|');
+            string[] splitData = data.Split('|');//Splits up the data
+
             int idReturned = Convert.ToInt32(splitData[1]);
             string lastNameReturned = splitData[2].ToString();
             string firstNameReturned = splitData[3].ToString();
@@ -266,11 +257,12 @@ public class Client : MonoBehaviour
             FindObjectOfType<PaymentController>().instance.returnedStaffMember = new StaffMember(idReturned, lastNameReturned, firstNameReturned, dateOfBirthReturned, startDateReturned, endDateReturned, permissionLevelReturned);            
             return;
         }
-        else if (data.Contains("%DIRECTSTOCKRT"))
+        else if (data.Contains("%DIRECTSTOCKRT")) //Server is reutning a individual stock item
         {
-            string[] splitData = data.Split('|');
-            if (splitData[1] == "ERROR")
+            string[] splitData = data.Split('|'); //Splits up the data
+            if (splitData[1] == "ERROR") //Checks if an error has been returned
             {
+                //Creates a popup
                 CreateErrorPopup("Error: No or mulitple data entrires returned");
             }
             else
@@ -279,9 +271,8 @@ public class Client : MonoBehaviour
                 return;
             }
         }
-        else if (data.Contains("%RECIEVED") && toSend.Count > 0)
+        else if (data.Contains("%RECIEVED") && toSend.Count > 0) //Server has recieved the data the client has sent
         {
-            //Server confirmed that it has recieved the data
             toSend.RemoveFirst();
             return;
         }
@@ -311,17 +302,15 @@ public class Client : MonoBehaviour
     }
 
     //Checks if client can send data to the server at the end of each frame
-    IEnumerator sendingData()
+    IEnumerator SendingData()
     {
-        while (true)
+        while (true) //Run infintly
         {
-            //Debug.Log("Client checking to send");
-            if (toSend.Count != 0)
+            if (toSend.Count != 0) //If there is data to send
             {
-                //Debug.Log(toSend.Peek());
                 string toSendCurrent = toSend.First();
-                Send(toSend.First());
-                yield return new WaitUntil(() => toSend.FirstOrDefault() != toSendCurrent);
+                Send(toSend.First()); //Send the data
+                yield return new WaitUntil(() => toSend.FirstOrDefault() != toSendCurrent); //When the first item in the linked list is no-longer the item sent
                 yield return new WaitForEndOfFrame();
             }
             else

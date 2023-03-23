@@ -29,6 +29,10 @@ Both of the Server builds will automatically create the relevant files it requir
 
 In the Builds folder there is also a change log. This contains all of the changes that have been made in between versions. So if you would like to see what has changed between the version you last tried and this version you can see.
 
+## Testing
+
+If you would like to test the system out, I have included the database file which I used during development. To use this file, copy and paste it into the following directory C:\Users\[User]\AppData\LocalLow\DefaultCompany\BabyyPos replacing [User] with the current users name
+
 ## Post-Script
 
 This project was solo developed, I plan to update this project every now and again when I get time. If you find any bugs please report it, as this can help me know what I need to fix. If you have any issues with the project, don't be afraid to get in contact, I'd be happy to help.

@@ -175,12 +175,12 @@ public class Server : MonoBehaviour
         else if (data.Contains("&STOCKWR"))
         {
             string[] splitData = data.Split('|');
-            serverController.instance.WriteStockItem(c, Convert.ToInt32(splitData[1]), splitData[2], (float)Convert.ToDouble(splitData[3]), Convert.ToInt32(splitData[4]));
+            serverController.instance.WriteStockItem(c, Convert.ToInt64(splitData[1]), splitData[2], (float)Convert.ToDouble(splitData[3]), Convert.ToInt32(splitData[4]));
         }
         else if (data.Contains("&STOCKDELETER"))
         {
             string[] splitData = data.Split('|');
-            FindObjectOfType<DatabaseManager>().instance.DeleteValueInStockTable(Convert.ToInt32(splitData[1]));
+            FindObjectOfType<DatabaseManager>().instance.DeleteValueInStockTable(Convert.ToInt64(splitData[1]));
         }
         else if (data.Contains("&STAFFWR"))
         {

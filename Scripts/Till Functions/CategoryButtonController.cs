@@ -15,18 +15,14 @@ public class CategoryButtonController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //references the client controller
         clientController = FindObjectOfType<ClientController>();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     //Updates the detials on the button object
     public void UpdateButton()
     {
+        //Sets the text and colour of the button
         gameObject.GetComponentInChildren<Text>().text = buttonCategory.categoryName;
         gameObject.GetComponent<Image>().color = buttonCategory.categoryColour;
     }

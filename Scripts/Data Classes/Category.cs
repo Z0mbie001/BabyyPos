@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Category 
 {
+    //Attribute definition
     public int categoryID;
     public string categoryName;
     public Color categoryColour;

@@ -89,6 +89,7 @@ public class StockModifyController : MonoBehaviour
         string q_toSend = "&STOCKDELETER|" + item.id;
         client.instance.toSend.AddLast(q_toSend);
         ClosePanel();
+        FindObjectOfType<StockLookup>().ClosePanel();
     }
 
     //Closes the delete panel

@@ -12,7 +12,7 @@ public class Encryption : MonoBehaviour
     [Header("Encryption Data")]
     DateTime currentDate = DateTime.Today;
     string key = "";
-    char[] alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!'£$%^&*()_+-=¬`|,<.>/?;:@[]{}~# ".ToCharArray();
+    readonly char[] alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!'£$%^&*()_+-=¬`|,<.>/?;:@[]{}~# ".ToCharArray();
     
 
 
@@ -45,26 +45,26 @@ public class Encryption : MonoBehaviour
     //Finds the position of an item in the array
     int FindPosInArray(char charToFind, char[] array)
     {
-        for(int i = 0; i < array.Length; i++)
+        for(int i = 0; i < array.Length; i++) //Iterate through the length of the array
         {
-            if(charToFind == array[i])
+            if(charToFind == array[i]) //If the current character is the one we want to find, return it
             {
                 return i;
             }
         }
-        return -1;
+        return -1; //If the character isn't int the array, return empty
     }
 
     //Encrypts the data and returns the cypher text
     public string Encrypt(string plainText)
     { 
         string cypherText = "";
-        for (int i = 0; i < plainText.Length; i++)
+        for (int i = 0; i < plainText.Length; i++) //Iterate through the plainText
         {
-            int keyCharNo = FindPosInArray(key[i % key.Count()], alphabet);
-            int plainTextCharNo = FindPosInArray((char)plainText[i], alphabet);
-            int cypherNumber = keyCharNo + plainTextCharNo;
-            cypherText += alphabet[cypherNumber % alphabet.Length];
+            int keyCharNo = FindPosInArray(key[i % key.Count()], alphabet); //Find where we are in the key
+            int plainTextCharNo = FindPosInArray((char)plainText[i], alphabet); //Find where the character is in the alphabet
+            int cypherNumber = keyCharNo + plainTextCharNo; 
+            cypherText += alphabet[cypherNumber % alphabet.Length]; //Add the new character to the array
         }
         return cypherText;
     }
@@ -73,16 +73,16 @@ public class Encryption : MonoBehaviour
     public string Decrypt(string cypherText)
     {
         string plainText = "";
-        for(int i = 0; i < cypherText.Length; i++)
+        for(int i = 0; i < cypherText.Length; i++) //Iterate through the cypherText
         {
-            int keyCharNo = FindPosInArray(key[i % key.Count()], alphabet);
-            int cypherTextCharNo = FindPosInArray((char)cypherText[i], alphabet);
-            int plainNumber = cypherTextCharNo - keyCharNo;
+            int keyCharNo = FindPosInArray(key[i % key.Count()], alphabet); //Find where we are in the key
+            int cypherTextCharNo = FindPosInArray((char)cypherText[i], alphabet); //Find where the character is in the alphabet
+            int plainNumber = cypherTextCharNo - keyCharNo; 
             while (plainNumber < 0)
             {
                 plainNumber += alphabet.Length;
             }
-            plainText += alphabet[plainNumber % alphabet.Length];
+            plainText += alphabet[plainNumber % alphabet.Length]; //Add the decrypted character to the array
         }
         return plainText;
     }

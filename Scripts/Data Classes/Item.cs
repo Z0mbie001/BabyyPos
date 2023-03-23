@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Item
 {
+    //Class attributes
     public long id = 0;
     public string name = "Item";
     public float price = 0.5f;

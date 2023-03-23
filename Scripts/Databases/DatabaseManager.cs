@@ -18,10 +18,13 @@ public class DatabaseManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //Sets the database manager as the current instance
         instance = this;
+
         //create the database conneciton
         dbcon = OpenConenctionToDB();
         PragmaForeignKey();
+
         //Makes sure that all the tables required exist
         CreateStockTable();
         CreateCategoryTable();
@@ -37,10 +40,12 @@ public class DatabaseManager : MonoBehaviour
     {
         //formats the database's location 
         string connection = "URI=file:" + Application.persistentDataPath + "/Babyy_Database.db";
-        //Debug.Log("Database Location : " + Application.persistentDataPath + "/Babyy_Database.db");        
+        //Debug.Log("Database Location : " + Application.persistentDataPath + "/Babyy_Database.db"); //For displaying the current path of the database file
+
         //Opens the databse conneciton
         IDbConnection dbConnection = new SqliteConnection(connection);
         dbConnection.Open();
+
         //returns the new database connection
         UnityEngine.Debug.Log("Successfully connected to the database");
         return dbConnection;
@@ -71,14 +76,13 @@ public class DatabaseManager : MonoBehaviour
     //Reads values in the stock table
     public List<Item> ReadValuesInStockTable(long id, string itemName)
     {
-        //Debug.Log("Requesting Read Values From Stock Table");
         //creates a temp list to store values and a temp string
         List<Item> items = new();
         string tempIdString;
         //create a command and reader
         IDbCommand cmnd_read = dbcon.CreateCommand();
         IDataReader reader;
-        //check to see if id == 0
+        //check to see if id is its defult value/formats the id as a string
         if (id == 0)
         {
             tempIdString = "%%";
@@ -91,7 +95,6 @@ public class DatabaseManager : MonoBehaviour
         string q_readTable = "SELECT * FROM stock_table WHERE id LIKE '" + tempIdString + "' AND name LIKE '%" + itemName + "%' ORDER BY id ASC";
         cmnd_read.CommandText = q_readTable;
         reader = cmnd_read.ExecuteReader();
-        //Debug.Log(q_readTable);
         //while the reader is recieveing data from the database
         while (reader.Read())
         {
@@ -128,14 +131,25 @@ public class DatabaseManager : MonoBehaviour
     {
         Item item = ReadValuesInStockTable(id, "")[0];
         IDbCommand cmnd_delete = dbcon.CreateCommand();
-        string q_deleteItem = "DELETE FROM stock_table WHERE id LIKE " + id + ";";
+        DeleteValueInCatStockTable(id);
+        string q_deleteItem = "DELETE FROM stock_table WHERE id = " + id + ";";
         cmnd_delete.CommandText = q_deleteItem;
         cmnd_delete.ExecuteNonQuery();
         InsertValueIntoLegacyStockTable(item.id, item.name, item.price, item.type);
     }
 
-    //create the catagory table
-    void CreateCategoryTable()
+    //Deletes a value from the category item table
+    public void DeleteValueInCatStockTable(long id)
+    {
+        Item item = ReadValuesInStockTable(id, "")[0];
+        IDbCommand cmnd_delete = dbcon.CreateCommand();
+        string q_deleteItem = "DELETE FROM categoryItem_table WHERE itemID = " + id + ";";
+        cmnd_delete.CommandText = q_deleteItem;
+        cmnd_delete.ExecuteNonQuery();
+    }
+
+        //create the catagory table
+        void CreateCategoryTable()
     {
         IDbCommand dbCommand;
         dbCommand = dbcon.CreateCommand();
@@ -176,7 +190,7 @@ public class DatabaseManager : MonoBehaviour
     void CreateCategoryItemTable()
     {
         IDbCommand dbCommand = dbcon.CreateCommand();
-        string q_createTable = "CREATE TABLE IF NOT EXISTS categoryItem_table (categoryID INTEGER, itemID INTEGER, itemPos INTEGER, PRIMARY KEY(categoryID, itemID) CONSTRAINT itemID FOREIGN KEY (itemID) REFERENCES stock_table (id));";
+        string q_createTable = "CREATE TABLE IF NOT EXISTS categoryItem_table (categoryID INTEGER, itemID INTEGER, itemPos INTEGER, PRIMARY KEY(categoryID, itemID) CONSTRAINT itemID FOREIGN KEY (itemID) REFERENCES stock_table (id)) ON DELETE CASCADE;";
         dbCommand.CommandText = q_createTable;
         dbCommand.ExecuteReader();
     }
@@ -223,7 +237,7 @@ public class DatabaseManager : MonoBehaviour
         List<StaffMember> data = new();
         IDbCommand cmnd_read = dbcon.CreateCommand();
         IDataReader reader;
-        string q_readTable = "SELECT * FROM staff_table WHERE staffID LIKE '%" + staffID.ToString() + "%' AND lastName LIKE '%" + staffLastName + "%' AND firstName LIKE '%" + staffFirstName + "%';";
+        string q_readTable = "SELECT * FROM staff_table WHERE staffID = " + staffID.ToString() + " AND lastName LIKE '%" + staffLastName + "%' AND firstName LIKE '%" + staffFirstName + "%';";
         cmnd_read.CommandText = q_readTable;
         reader = cmnd_read.ExecuteReader();
         while (reader.Read())

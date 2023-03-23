@@ -21,12 +21,6 @@ public class OrderButtonController : MonoBehaviour
         clientController = FindObjectOfType<ClientController>();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     //Updates the button's details
     public void UpdateButton()
     {

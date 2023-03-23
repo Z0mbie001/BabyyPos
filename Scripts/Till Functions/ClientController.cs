@@ -41,21 +41,17 @@ public class ClientController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //Set this script as an instance
         instance = this;
+        //Run two initial proceudres
         UpdateOrderButtons();
         CalculateSubTotal();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     //Adds an item to the order
     public void AddItemToOrder(Item itemToAdd)
     {
-        if (!CheckObjectInArray<Item>(itemToAdd, itemsInOrder.Keys.ToArray<Item>()))
+        if (!CheckObjectInArray<Item>(itemToAdd, itemsInOrder.Keys.ToArray<Item>())) //Check if the item is already in the order 
         {
             itemsInOrder.Add(itemToAdd, 1);
             OrderButtonController newButton = Instantiate(orderButtonPrefab, orderContentHolder.transform).GetComponent<OrderButtonController>();
@@ -111,14 +107,6 @@ public class ClientController : MonoBehaviour
             return;
         }
         
-        /*foreach(OrderButtonController obc in orderButtons)
-        {
-            if(obc.item == selectedItem)
-            {
-                Destroy(obc.gameObject);
-                orderButtons.Remove(obc);
-            }
-        }*/
         itemsInOrder.Remove(selectedItem);
         selectedItem = null;
         UpdateOrderButtons();
@@ -135,13 +123,10 @@ public class ClientController : MonoBehaviour
         int.TryParse((itemsInOrder[selectedItem] + 1).ToString(), out int tempQuantity);
         if(tempQuantity < itemsInOrder[selectedItem])
         {
-            return;
-        }
-        else
-        {
-            itemsInOrder[selectedItem] = tempQuantity;
+            
             FindObjectOfType<Client>().CreateErrorPopup("Quanity exceeded maximum limit");
         }
+        itemsInOrder[selectedItem] = tempQuantity;
         UpdateOrderButtons();
         CalculateSubTotal();
     }    
@@ -251,11 +236,12 @@ public class ClientController : MonoBehaviour
         FindObjectOfType<Client>().instance.toSend.AddLast(q_toSend);
     }
 
+    //Checks to see if an object is in the array (can be used for any type of object)
     public bool CheckObjectInArray<type>(type item, type[] array)
     {
-        foreach(type typeItem in array)
+        foreach(type typeItem in array) //Iterate through the items
         {
-            if(typeItem.Equals(item) && typeItem != null)
+            if(typeItem.Equals(item) && typeItem != null) 
             {
                 return true;
             }
