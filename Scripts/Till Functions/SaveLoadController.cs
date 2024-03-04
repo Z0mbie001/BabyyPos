@@ -48,7 +48,6 @@ public class SaveLoadController : MonoBehaviour
         };
         if (clientController != null)
         {
-            //Debug.Log("Transaciton Number retrieved");
             data.transactionNumber = clientController.transactionNumber;
         }
         else

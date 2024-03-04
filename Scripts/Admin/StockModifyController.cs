@@ -26,12 +26,6 @@ public class StockModifyController : MonoBehaviour
         client = FindObjectOfType<Client>();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     //Run when a UI button is pressed
     public void ConfirmButtonPress()
     {

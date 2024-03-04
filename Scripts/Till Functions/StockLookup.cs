@@ -89,7 +89,6 @@ public class StockLookup : MonoBehaviour
             return;
         }
         while(activeSLUButtons.Count > 0) 
-        //foreach(GameObject go in activeSLUButtons)
         {
                 Destroy(activeSLUButtons[0].gameObject);
                 activeSLUButtons.Remove(activeSLUButtons[0]);

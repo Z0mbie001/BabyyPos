@@ -14,14 +14,18 @@ public class StockItemAdd : MonoBehaviour
     //Activated when the confirm button is pressed
     public void OnConfirmButtonPress()
     {
+        // Validate that none of the inputs are left blank
         if(idInput.text == "" || nameInput.text == "" || priceInput.text == "" || typeInput.text == "")
         {
             Debug.LogWarning("Missing data, cannot send request");
             return;
         }
 
+        // Format a query for the server and add it to the send queue
         string q_toSend = "&STOCKWR|" + idInput.text + "|" + nameInput.text + "|" + priceInput.text + "|" + typeInput.text;
         FindObjectOfType<Client>().toSend.AddLast(q_toSend);
+
+        //Reset the input fields
         idInput.text = "";
         nameInput.text = "";
         priceInput.text = "";

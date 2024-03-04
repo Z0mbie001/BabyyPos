@@ -22,13 +22,15 @@ public class StaffAdd : MonoBehaviour
         DateTime dobDT;
         DateTime startDT;
         DateTime endDT;
+        // Validate that none of the data fields are left blank
         if(idInput.text == "" || firstNameInput.text == "" || lastNameInput.text == "" || dateOfBirthInput.text == "" || startDateInput.text == "" || endDateInput.text == "" || permissionsLevelInput.text == "")
         {
             return;
-        }else if(!DateTime.TryParse(dateOfBirthInput.text, out dobDT) || !DateTime.TryParse(startDateInput.text, out startDT) || !DateTime.TryParse(endDateInput.text, out endDT))
+        }else if(!DateTime.TryParse(dateOfBirthInput.text, out dobDT) || !DateTime.TryParse(startDateInput.text, out startDT) || !DateTime.TryParse(endDateInput.text, out endDT)) // Validate that a correct date has been entered
         {
             return;
         }
+        // Format a server query with the data and add the the send queue
         string q_toSend = "&STAFFWR|" + idInput.text + "|" + firstNameInput.text + "|" + lastNameInput.text + "|" + dobDT.ToString("s") + "|" + startDT.ToString("s") + "|" + endDT.ToString("s") + "|" + permissionsLevelInput.text;
         FindObjectOfType<Client>().instance.toSend.AddLast(q_toSend);
         CloseWindow();

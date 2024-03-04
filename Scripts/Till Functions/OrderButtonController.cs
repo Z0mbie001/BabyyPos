@@ -34,7 +34,6 @@ public class OrderButtonController : MonoBehaviour
         if(clientController.instance.selectedItem == item)
         {
             gameObject.GetComponent<Image>().color = new Color(210, 210, 210);
-            //gameObject.GetComponent<Button>().Select();
         }
         else
         {

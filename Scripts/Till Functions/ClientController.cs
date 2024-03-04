@@ -74,7 +74,6 @@ public class ClientController : MonoBehaviour
         {
             orderSubTotal += kvp.Key.price * kvp.Value;
         }
-        //orderSubTotal = (float)(System.Math.Round(orderSubTotal, 3));
         subTotalText.text = "Sub-Total: £" + orderSubTotal.ToString("0.00");
     }
 

@@ -103,7 +103,6 @@ public class PaymentController : MonoBehaviour
             string toSend_transactionItem = "&TRANSACTIONITEMDBWR|" + transactionToSend.transactionID.ToString() + "|" + item.Item1.id.ToString() + "|" + item.Item2.ToString() + "|" + item.Item1.price.ToString();
             client.instance.toSend.AddLast(toSend_transactionItem);
         }
-        //Debug.Log("Transaction details sent to server");
         ClosePaymentScreen();
         ageVerificationPanel.SetActive(false);
         clientController.itemsInOrder.Clear();
@@ -120,16 +119,12 @@ public class PaymentController : MonoBehaviour
     {
         Transaction transDetails;
         string transID = "";
-        //transID = Encoding.Default.GetBytes(clientController.instance.tillName.ToCharArray())[0].ToString() + clientController.instance.transactionNumber;
-        //for(int i = 0; i < clientController.instance.tillName.Length; i++)
         for(int i = 0; i < clientController.instance.tillName.Length && i < 11; i++)
         {
             transID += Encoding.Default.GetBytes(clientController.instance.tillName.ToCharArray())[i].ToString();
         }
         transID += DateTime.Now.DayOfYear.ToString() + DateTime.Now.Year.ToString();
         transID += clientController.instance.transactionNumber;
-        //Debug.Log(transID);
-        //transID = transID.Substring(transID.Length - 9, 8);
         if(transID.Length > 18)
         {
             transID = transID.Substring(transID.Length - 17, transID.Length - 1);

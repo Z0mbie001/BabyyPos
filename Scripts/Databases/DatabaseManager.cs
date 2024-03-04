@@ -40,8 +40,7 @@ public class DatabaseManager : MonoBehaviour
     {
         //formats the database's location 
         string connection = "URI=file:" + Application.persistentDataPath + "/Babyy_Database.db";
-        //Debug.Log("Database Location : " + Application.persistentDataPath + "/Babyy_Database.db"); //For displaying the current path of the database file
-
+        
         //Opens the databse conneciton
         IDbConnection dbConnection = new SqliteConnection(connection);
         dbConnection.Open();
@@ -67,6 +66,7 @@ public class DatabaseManager : MonoBehaviour
         //create a command
         IDbCommand dbCommand;
         dbCommand = dbcon.CreateCommand();
+
         //create the SQL command and execute it
         string q_createTable = "CREATE TABLE IF NOT EXISTS stock_table (id INTEGER PRIMARY KEY, name VARCHAR(255), price FLOAT, type INTEGER);";
         dbCommand.CommandText = q_createTable;
@@ -79,9 +79,11 @@ public class DatabaseManager : MonoBehaviour
         //creates a temp list to store values and a temp string
         List<Item> items = new();
         string tempIdString;
+
         //create a command and reader
         IDbCommand cmnd_read = dbcon.CreateCommand();
         IDataReader reader;
+
         //check to see if id is its defult value/formats the id as a string
         if (id == 0)
         {
@@ -91,10 +93,12 @@ public class DatabaseManager : MonoBehaviour
         {
             tempIdString = id.ToString();
         }
+
         //create the SQL command and execute it
         string q_readTable = "SELECT * FROM stock_table WHERE id LIKE '" + tempIdString + "' AND name LIKE '%" + itemName + "%' ORDER BY id ASC";
         cmnd_read.CommandText = q_readTable;
         reader = cmnd_read.ExecuteReader();
+
         //while the reader is recieveing data from the database
         while (reader.Read())
         {
@@ -105,6 +109,7 @@ public class DatabaseManager : MonoBehaviour
             int typeRead = Convert.ToInt32(reader[3]);
             items.Add(new Item(idRead, nameRead, priceRead, typeRead));
         }
+
         //return all the items
         return items;
     }
@@ -119,6 +124,7 @@ public class DatabaseManager : MonoBehaviour
     //Inserts values Into the stock table
     public void InsertValueIntoStockTable(long id, string itemName, float price, int type)
     {
+        //Create a command and execute it
         IDbCommand cmnd_insert = dbcon.CreateCommand();
         string q_insertTable = "INSERT OR REPLACE Into stock_table (id, name, price, type) VALUES (" + id + ", '" + itemName + "', " + price + ", " + type + ");";
         cmnd_insert.CommandText = q_insertTable;
@@ -130,6 +136,8 @@ public class DatabaseManager : MonoBehaviour
     public void DeleteValueInStockTable(long id)
     {
         Item item = ReadValuesInStockTable(id, "")[0];
+
+        //Create a command and execute it
         IDbCommand cmnd_delete = dbcon.CreateCommand();
         DeleteValueInCatStockTable(id);
         string q_deleteItem = "DELETE FROM stock_table WHERE id = " + id + ";";
@@ -142,6 +150,8 @@ public class DatabaseManager : MonoBehaviour
     public void DeleteValueInCatStockTable(long id)
     {
         Item item = ReadValuesInStockTable(id, "")[0];
+
+        //Create a command and execute it
         IDbCommand cmnd_delete = dbcon.CreateCommand();
         string q_deleteItem = "DELETE FROM categoryItem_table WHERE itemID = " + id + ";";
         cmnd_delete.CommandText = q_deleteItem;
@@ -149,8 +159,9 @@ public class DatabaseManager : MonoBehaviour
     }
 
         //create the catagory table
-        void CreateCategoryTable()
+    void CreateCategoryTable()
     {
+        //Create a command and execute it
         IDbCommand dbCommand;
         dbCommand = dbcon.CreateCommand();
         string q_createTable = "CREATE TABLE IF NOT EXISTS category_table (id INTEGER PRIMARY KEY, name VARCHAR(255), color VARCHAR(255));";
@@ -162,11 +173,15 @@ public class DatabaseManager : MonoBehaviour
     public List<Category> ReadValuesInCategoryTable(int id)
     {
         List<Category> categories = new();
+
+        //Create a command and execute it
         IDbCommand cmnd_read = dbcon.CreateCommand();
         IDataReader reader;
         string q_readTable = "SELECT * FROM category_table WHERE id LIKE '%" + id + "' ORDER BY id ASC;";
         cmnd_read.CommandText = q_readTable;
         reader = cmnd_read.ExecuteReader();
+
+        //While the reader is recieving data from the database
         while (reader.Read())
         {
             int catIDRead = Convert.ToInt32(reader[0]);
@@ -180,6 +195,7 @@ public class DatabaseManager : MonoBehaviour
     //Inserts values Into the category table
     public void InsertValuesIntoCategoryTable(int id, string categoryName, UnityEngine.Color categoryColour)
     {
+        //Create a command and execute it
         IDbCommand cmnd_insert = dbcon.CreateCommand();
         string q_insertTable = "INSERT OR REPLACE Into category_table (id, name, colour) VALUES (" + id + ", '" + categoryName + "', '" + ColorUtility.ToHtmlStringRGB(categoryColour).ToString() + "');";
         cmnd_insert.CommandText = q_insertTable;
@@ -189,6 +205,7 @@ public class DatabaseManager : MonoBehaviour
     //Creates the cateogry item Table
     void CreateCategoryItemTable()
     {
+        //Create a command and execute it
         IDbCommand dbCommand = dbcon.CreateCommand();
         string q_createTable = "CREATE TABLE IF NOT EXISTS categoryItem_table (categoryID INTEGER, itemID INTEGER, itemPos INTEGER, PRIMARY KEY(categoryID, itemID) CONSTRAINT itemID FOREIGN KEY (itemID) REFERENCES stock_table (id)) ON DELETE CASCADE;";
         dbCommand.CommandText = q_createTable;
@@ -199,11 +216,15 @@ public class DatabaseManager : MonoBehaviour
     public List<KeyValuePair<long, int>> ReadValuesInCategoryItemTable(int categoryID)
     {
         List<KeyValuePair<long, int>> items = new();
+
+        //Create a command and execute it
         IDbCommand cmnd_read = dbcon.CreateCommand();
         IDataReader reader;
         string q_readTable = "SELECT itemID, itemPos FROM categoryItem_table WHERE categoryID LIKE '" + categoryID + "';";
         cmnd_read.CommandText = q_readTable;
         reader = cmnd_read.ExecuteReader();
+
+        //While the reader is recieving data from the database
         while (reader.Read())
         {
             long itemIdRead = Convert.ToInt64(reader[0]);
@@ -216,6 +237,7 @@ public class DatabaseManager : MonoBehaviour
     //Inserts values Into the category item table
     public void InsertValuesIntoCategoryItemsTable(int categoryID, long itemID, int itemPos)
     {
+        //Create a command and execute it
         IDbCommand cmnd_insert = dbcon.CreateCommand();
         string q_insertTable = "INSERT OR REPLACE Into categoryItem_table (categoryId, itemID, itemPos) VALUES (" + categoryID + ", " + itemID + ", " + itemPos + ");";
         cmnd_insert.CommandText = q_insertTable;
@@ -225,6 +247,7 @@ public class DatabaseManager : MonoBehaviour
     //creates the staff table
     void CreateStaffTable()
     {
+        //Create a command and execute it
         IDbCommand dbCommand = dbcon.CreateCommand();
         string q_createTable = "CREATE TABLE IF NOT EXISTS staff_table (staffID INTEGER PRIMARY KEY, lastName VARCHAR(255), firstName VARCHAR(255), dateOfBirth VARCHAR(255), startDate VARCHAR(255), endDate VARCHAR(255), permissionsLv INTEGER);";
         dbCommand.CommandText = q_createTable;
@@ -235,11 +258,15 @@ public class DatabaseManager : MonoBehaviour
     public List<StaffMember> ReadStaffMembersInTable(int staffID, string staffLastName, string staffFirstName)
     {
         List<StaffMember> data = new();
+
+        //Create a command and execute it
         IDbCommand cmnd_read = dbcon.CreateCommand();
         IDataReader reader;
         string q_readTable = "SELECT * FROM staff_table WHERE staffID = " + staffID.ToString() + " AND lastName LIKE '%" + staffLastName + "%' AND firstName LIKE '%" + staffFirstName + "%';";
         cmnd_read.CommandText = q_readTable;
         reader = cmnd_read.ExecuteReader();
+
+        //While the reader is recieving data from the database
         while (reader.Read())
         {
             int staffIDRead = Convert.ToInt32(reader[0]);
@@ -257,6 +284,7 @@ public class DatabaseManager : MonoBehaviour
     //Inserts values Into the staff table
     public void InsertValuesIntoStaffTable(StaffMember staffMemberToAdd)
     {
+        //Create a command and execute it
         IDbCommand cmnd_insert = dbcon.CreateCommand();
         string q_insertTable = "INSERT OR REPLACE Into staff_table (staffID, lastName, firstName, dateOfBirth, startDate, endDate, permissionsLv) VALUES (" + staffMemberToAdd.staffID.ToString() + ", '" + staffMemberToAdd.lastName + "', '" + staffMemberToAdd.firstName + "', '" + staffMemberToAdd.dateOfBirth.ToString("s") + "', '" + staffMemberToAdd.startDate.ToString("s") + "', '" + staffMemberToAdd.endDate.ToString("s") + "', " + staffMemberToAdd.permissionLevel.ToString() + ");";
         cmnd_insert.CommandText = q_insertTable;
@@ -266,6 +294,7 @@ public class DatabaseManager : MonoBehaviour
     //Creates the transaction table
     void CreateTransactionTable()
     {
+        //Create a command and execute it
         IDbCommand dbCommand = dbcon.CreateCommand();
         string q_createTable = "CREATE TABLE IF NOT EXISTS transaction_table (transactionID INTEGER PRIMARY KEY, transactionDateTime VARCHAR(255), transactionTotal FLOAT, paymentType INTEGER, staffID INTEGER);";
         dbCommand.CommandText = q_createTable;
@@ -276,11 +305,15 @@ public class DatabaseManager : MonoBehaviour
     public List<Transaction> ReadValuesFromTransactionTable(long transID, DateTime transDateTime, int staffIDToFind, float transTotal)
     {
         List<Transaction> data = new();
+
+        //Create a command and execute it
         IDbCommand cmnd_read = dbcon.CreateCommand();
         IDataReader reader;
         string q_readTable = "SELECT * FROM transaction_table WHERE transID Like '%" + transID.ToString() + "%' AND transactionDateTime LIKE '%" + transDateTime.ToString("s") + "%' OR transactionTotal = " + transTotal + " AND staffID LIKE '%" + staffIDToFind.ToString() + "%';";
         cmnd_read.CommandText = q_readTable;
         reader = cmnd_read.ExecuteReader();
+
+        //While the reader is recieving data from the database
         while (reader.Read())
         {
             long transIDRead = Convert.ToInt64(reader[0]);
@@ -296,6 +329,7 @@ public class DatabaseManager : MonoBehaviour
     //Inserts values Into the transaction table
     public void InsertValuesIntoTransTable(long transID, DateTime transDateTime, float transTotal, int payType, int staffID)
     {
+        //Create a command and execute it
         IDbCommand cmnd_insert = dbcon.CreateCommand();
         string q_insertTable = "INSERT OR REPLACE Into transaction_table (transactionID, transactionDateTime, transactionTotal, paymentType, staffID) VALUES (" + transID.ToString() + ", '" + transDateTime.ToString("s") + "', '" + transTotal.ToString() + "', " + payType.ToString() + ", " + staffID + ");";
         cmnd_insert.CommandText = q_insertTable;
@@ -305,6 +339,7 @@ public class DatabaseManager : MonoBehaviour
     //creeates the transaction item table
     void CreateTransactionItemTable()
     {
+        //Create a command and execute it
         IDbCommand dbCommand = dbcon.CreateCommand();
         string q_createTable = "CREATE TABLE IF NOT EXISTS transactionItem_table (transactionID INTEGER, itemID INTEGER, quantity INTEGER, price FLOAT, PRIMARY KEY(transactionID, itemID) CONSTRAINT itemID FOREIGN KEY (itemID) REFERENCES legacy_stock_table (id));";
         dbCommand.CommandText = q_createTable;
@@ -315,11 +350,15 @@ public class DatabaseManager : MonoBehaviour
     public List<(Item, int)> ReadValuesFromTransactionItemTable(long transID)
     {
         List<(Item, int)> data = new();
+
+        //Create a command and execute it
         IDbCommand cmnd_read = dbcon.CreateCommand();
         IDataReader reader;
         string q_readTable = "SELECT * FROM transactionItem_table WHERE transID LIKE '%" + transID.ToString() + "%';";
         cmnd_read.CommandText = q_readTable;
         reader = cmnd_read.ExecuteReader();
+
+        //While the reader is recieveing data from the database
         while (reader.Read())
         {
             Item item = new(Convert.ToInt32(reader[1]), "", Convert.ToInt32(reader[3]), 0);
@@ -332,6 +371,7 @@ public class DatabaseManager : MonoBehaviour
     //Inserts values Into the transaction item table
     public void InsertValuesIntoTransItemTable(long transID, long itemID, int quantity, float price)
     {
+        //Create a command and execute it
         IDbCommand cmnd_insert = dbcon.CreateCommand();
         string q_insertTable = "INSERT OR REPLACE Into transactionItem_table (transactionID, itemID, quantity, price) VALUES (" + transID.ToString() + ", " + itemID.ToString() + ", " + quantity.ToString() + ", " + price.ToString() + ");";
         cmnd_insert.CommandText = q_insertTable;
@@ -341,9 +381,10 @@ public class DatabaseManager : MonoBehaviour
     //Create a legacy table for stock items
     void CreateLegacyStockTable()
     {
-        //create a command
+        //Create a command and execute it
         IDbCommand dbCommand;
         dbCommand = dbcon.CreateCommand();
+
         //create the SQL command and execute it
         string q_createTable = "CREATE TABLE IF NOT EXISTS legacy_stock_table (id INTEGER PRIMARY KEY, name VARCHAR(255), price FLOAT, type INTEGER);";
         dbCommand.CommandText = q_createTable;
@@ -353,13 +394,14 @@ public class DatabaseManager : MonoBehaviour
     //Reads values in the legacy stock table
     public List<Item> ReadValuesInLegacyStockTable(long id, string itemName)
     {
-        //Debug.Log("Requesting Read Values From Stock Table");
         //creates a temp list to store values and a temp string
         List<Item> items = new();
         string tempIdString;
+
         //create a command and reader
         IDbCommand cmnd_read = dbcon.CreateCommand();
         IDataReader reader;
+
         //check to see if id == 0
         if (id == 0)
         {
@@ -369,11 +411,12 @@ public class DatabaseManager : MonoBehaviour
         {
             tempIdString = id.ToString();
         }
+
         //create the SQL command and execute it
         string q_readTable = "SELECT * FROM legacy_stock_table WHERE id = '" + tempIdString + "' AND name LIKE '%" + itemName + "%' ORDER BY id ASC";
         cmnd_read.CommandText = q_readTable;
         reader = cmnd_read.ExecuteReader();
-        //Debug.Log(q_readTable);
+
         //while the reader is recieveing data from the database
         while (reader.Read())
         {
@@ -384,6 +427,7 @@ public class DatabaseManager : MonoBehaviour
             int typeRead = Convert.ToInt32(reader[3]);
             items.Add(new Item(idRead, nameRead, priceRead, typeRead));
         }
+
         //return all the items
         return items;
     }
@@ -392,6 +436,7 @@ public class DatabaseManager : MonoBehaviour
     //Inserts values Into the legacy stock table
     public void InsertValueIntoLegacyStockTable(long id, string itemName, float price, int type)
     {
+        //Create a command and execute it
         IDbCommand cmnd_insert = dbcon.CreateCommand();
         string q_insertTable = "INSERT OR REPLACE INTO legacy_stock_table (id, name, price, type) VALUES (" + id + ", '" + itemName + "', " + price + ", " + type + ");";
         cmnd_insert.CommandText = q_insertTable;
