@@ -1,6 +1,6 @@
-# ComputerScienceNEA
+# BabyyPos
 
-My Computer Science NEA
+A basic Sever-Client Point-of-Sale system
 
 This project is being made for my computer science NEA for A-Level.
 I created a simple Point-Of-Sale Till system which could be used in a professional environment.
